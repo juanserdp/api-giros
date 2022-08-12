@@ -1,0 +1,22 @@
+npm init -y
+npm i express
+npm i nodemon
+npm install --save-dev @babel/core @babel/cli @babel/preset-env
+npm install --save-dev @babel/node
+npm i cors
+
+npm i mongoose
+npm i mongodb
+
+npm i graphql
+npm i express-graphql
+npm i graphql-tools
+npm i @graphql-tools/schema
+
+
+npm i nodemailer
+npm i jsonwebtoken
+npm i bcrypt
+npm i dotenv
+
+// correo: juanrodnodemailer@yahoo.com contraseña : Za4Ir8b4lqX9exTld8Wfvn1ZNkGeC5ftDrXDO8EY
