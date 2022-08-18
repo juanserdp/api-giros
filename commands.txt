@@ -24,6 +24,13 @@ npm i jsonwebtoken
 npm i bcrypt
 npm i dotenv
 
+npm i @graphql-tools/mock
+npm i chai supertest mocha
+npm i supertest
+npm i mocha
+npm install --save-dev chai-graphql
+npm i -D jest
+
 // correo: juanrodnodemailer@yahoo.com contraseña : Za4Ir8b4lqX9exTld8Wfvn1ZNkGeC5ftDrXDO8EY
 
 //Dependencies
@@ -33,3 +40,15 @@ npm i dotenv
 //3. npm i graphql-tools @graphql-tools/schema
 //4. npm i mongoose mongodb
 //5. npm install --save-dev @babel/core @babel/cli @babel/preset-env --save-dev @babel/node
+//6. npm i jsonwebtoken bcrypt
+//7. npm i dotenv
+//8. npm i uuid
+//9. npm i multer
+
+//test
+//10. npm i @graphql-tools/mock
+//11. npm i -D jest supertest chai chai-graphql
+
+
+//10. npm i @graphql-tools/mock
+//11. npm i chai supertest mocha

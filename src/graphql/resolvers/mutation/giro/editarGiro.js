@@ -1,7 +1,9 @@
-import Giro from "../../../models/Giro";
+import Giro from "../../../../models/Giro";
 
-export const editarGiro = async (_, { id, nombres, apellidos, tipoDocumento, numeroDocumento, banco, tipoCuenta, numeroCuenta, valorGiro, comprobantePago }) => {
-    if (true) {
+export const editarGiro = async (_root, { id, nombres, apellidos, tipoDocumento, numeroDocumento, banco, tipoCuenta, numeroCuenta, valorGiro}, context) => {
+    if (context.autorizacion &&
+        (context.uid === "admin" ||
+        context.rol === "asesor")) {
         try {
             return await Giro.findByIdAndUpdate(id, {
                 nombres,
@@ -11,8 +13,7 @@ export const editarGiro = async (_, { id, nombres, apellidos, tipoDocumento, num
                 banco, 
                 tipoCuenta,
                 numeroCuenta,
-                valorGiro,
-                comprobantePago
+                valorGiro
             }, function (err, doc) {
                 if (err) return { error: `Hubo un error al intentar editar el giro con id: ${id}` };
                 else console.log(doc);

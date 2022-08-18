@@ -1,0 +1,1 @@
+export let VALOR_MINIMO_GIRO = 10000;

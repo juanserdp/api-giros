@@ -34,13 +34,17 @@ const GiroSchema = new Schema({
         type: String,
         requried: true
     },
-    valorGiro:{
+    valorGiro:{ //OJO PORQUE QUE SENTIDO TIENE ENVIAR GIROS DE CERO PESOS
         type: Number,
         requried: true
     },
     comprobantePago:{ // NOT REQUIRED
         type: String,
         requried: false
+    },
+    fechaEnvio: {
+        type: String,
+        requried: true
     }
 }, { collection: "Giros" });
 

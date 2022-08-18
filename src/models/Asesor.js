@@ -1,11 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const UsuarioSchema = new Schema({
-    asesor:{
-        type: Schema.Types.ObjectId,
-        ref: 'Asesor',
-        requried: true
-    },
+const AsesorSchema = new Schema({
     nombres: {
         type: String,
         requried: true
@@ -24,34 +19,24 @@ const UsuarioSchema = new Schema({
     },
     clave: {
         type: String,
-        requried: true
+        requried: true,
     },
     saldo: {
         type: Number,
         requried: true,
         default: 0
     },
-    deuda: {
-        type: Number,
-        requried: true,
-        default: 0
-    },
-    capacidadPrestamo: {
-        type: Number,
-        requried: true,
-        default: 0
-    },
-    giros: [{
-            type: Schema.Types.ObjectId,
-            ref: "Giro",
-            required: true
-        }],
+    usuarios: [{
+        type: Schema.Types.ObjectId,
+        ref: "Usuario",
+        required: true
+    }],
     estado: {
         type: String,
         requried: true,
         enum:['ACTIVO','INACTIVO'],
         default: 'ACTIVO'
     }
-}, { collection: "Usuarios" });
+}, { collection: "Asesores" });
 
-export default model("Usuario", UsuarioSchema);
+export default model("Asesor", AsesorSchema);

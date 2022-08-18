@@ -1,7 +1,7 @@
-import Giro from "../../../models/Giro";
+import Giro from "../../../../models/Giro";
 
-export const eliminarGiro = async (_, { id }) => {
-    if (true) {
+export const eliminarGiro = async (_root, { id }, context) => {
+    if (context.autorizacion && context.uid === "admin") {
         try {
             return await Giro.findByIdAndDelete(id, function (err, doc) {
                 if (err) return { error: `Hubo un error al intentar eliminar el giro con id: ${id}` };
