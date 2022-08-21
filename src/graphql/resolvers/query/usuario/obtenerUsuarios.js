@@ -2,7 +2,7 @@ import Usuario from "../../../../models/Usuario";
 
 export const obtenerUsuarios = async (_root, _args, context) => {
     if (context.autorizacion &&
-        context.rol === "ADMINISTRADOR") {//context.autorizacion && context.uid === "admin"
+        context.rol === "ADMINISTRADOR") {
         try {
             let usuarios;
             if (usuarios = await Usuario.find({}, function (error, rta) {

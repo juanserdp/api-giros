@@ -3,8 +3,15 @@ import { resolvers } from "./resolvers/resolvers";
 
 export const typeDefs = `
     type Query{
+        """ USUARIOS """
         obtenerUsuarios: [Usuario]
         obtenerUsuarioPorId(id: ID!): Usuario
+
+        """ ASESORES """
+        obtenerAsesores: [Asesor]
+        obtenerAsesorPorId(id: ID!): Asesor
+
+        """ GIROS """
         obtenerGiros: [Giro]
         obtenerGiroPorId(id: ID!): Giro
         obtenerGirosPorIdUsuario(id: ID!): [Giro]
@@ -49,6 +56,17 @@ export const typeDefs = `
             saldo: Float!,
             estado: String!
         ): Asesor
+        editarAsesor(
+            id: ID!,
+            nombres: String!,
+            apellidos: String!,
+            tipoDocumento: String!,
+            numeroDocumento: String!,
+            clave: String!,
+            saldo: Float!,
+            estado: String!
+        ): Asesor
+        eliminarAsesor(id: ID!): Asesor
 
         """ GIROS """
         crearGiro(

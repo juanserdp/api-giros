@@ -6,9 +6,9 @@ export const eliminarUsuario = async (_root, { id }, context) => {
             context.rol === "ADMINISTRADOR")) {
         try {
             let rtaUsuarioDelete;
-            if(rtaUsuarioDelete = await Usuario.findByIdAndDelete(id, function (err, doc) {
-                if (error) console.error(`Hubo un error al intentar editar el usuario con id: ${id}. error: ${error} `, " from eliminarUsuario.js");
-                else if (doc) console.log("Usuario editado: ", doc, " from eliminarUsuario.js");
+            if(rtaUsuarioDelete = await Usuario.findByIdAndDelete(id, function (error, doc) {
+                if (error) console.error(`Hubo un error al intentar eliminar el usuario con id: ${id}. error: ${error} `, " from eliminarUsuario.js");
+                else if (doc) console.log("Usuario eliminado: ", doc, " from eliminarUsuario.js");
             }).clone()) return rtaUsuarioDelete;
         } catch (error) {
             console.error(error, " from eliminarUsuario.js");

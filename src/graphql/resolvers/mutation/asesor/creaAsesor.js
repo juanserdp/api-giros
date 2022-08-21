@@ -6,21 +6,29 @@ export const crearAsesor = async (_root, { nombres, apellidos, tipoDocumento, nu
     if (context.autorizacion &&
         (context.rol === "ADMINISTRADOR")) {
         /*/ VALIDAR QUE ESTE USUARIO NO SE HAYA REGISTRADO ANTES/*/
+
         try {
-            const asesor = new Asesor({
-                nombres,
-                apellidos,
-                tipoDocumento,
-                numeroDocumento,
-                clave: bycript.hashSync(clave, salt),
-                saldo,
-                estado
-            });
-            let rtaAsesorSave;
-            if (rtaAsesorSave = await asesor.save(null, function (error, doc) {
-                if (error) console.error(`Hubo un error al intentar crear un asesor. error: ${error} `, " from crearAsesor.js");
-                else if (doc) console.log(doc, " from crearAsesor.js");
-            })) return rtaAsesorSave;
+            let user = await Asesor.find({ numeroDocumento }, function (error, rta) {
+                if (error) return console.error(`Ocurrio un error interno de mongo al intentar buscar entre todos los asesores un asesor con ese documento, el error es: ${error}`, " from crearAsesor.js");
+                else if (rta) console.log("Este asesor ya existe: ", rta, " from crearAsesor.js");
+            }).clone();
+            if (user.length == 0) {
+                const asesor = new Asesor({
+                    nombres,
+                    apellidos,
+                    tipoDocumento,
+                    numeroDocumento,
+                    clave: bycript.hashSync(clave, salt),
+                    saldo,
+                    estado
+                });
+                let rtaAsesorSave = await asesor.save(null, function (error, doc) {
+                    if (error) console.error(`Hubo un error al intentar crear un asesor. error: ${error} `, " from crearAsesor.js");
+                    else if (doc) console.log(doc, " from crearAsesor.js");
+                });
+                if (rtaAsesorSave) return rtaAsesorSave;
+            }
+            else throw new Error("El asesor ya existe!");
         } catch (error) {
             console.error(error, " from crearAsesor.js");
             throw new Error(error);

@@ -30,7 +30,7 @@ npm i supertest
 npm i mocha
 npm install --save-dev chai-graphql
 npm i -D jest
-
+npm install eslint --save-dev
 // correo: juanrodnodemailer@yahoo.com contraseña : Za4Ir8b4lqX9exTld8Wfvn1ZNkGeC5ftDrXDO8EY
 
 //Dependencies

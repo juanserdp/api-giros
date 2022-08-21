@@ -1,5 +1,6 @@
 import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
+import {usuario, claveUsuario, asesor, claveAsesor, admin, claveAdmin } from "../../../constants/cuentas";
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
 
@@ -8,37 +9,48 @@ const baseURL = "http://localhost:4000/graphql";
 const request = supertest(baseURL);
 const expect = chai.expect;
 
-const user = "admin";
-const clave = "uT9pL6iuHClcT1z";
-
-const wrongClave = `
+const credencialesCorrectasAdministrador = `
     mutation{
-        login(numeroDocumento: "admin", clave:"13245"){
-            error
-        }
-    }
-`;
-const wrongUsuario = `
-    mutation{
-        login(numeroDocumento: "ADMIN", clave:"uT9pL6iuHClcT1z"){
-            error
-        }
-    }
-`;
-const correctCredentials = `
-    mutation{
-        login(numeroDocumento: "${user}", clave:"${clave}"){
+        login(numeroDocumento: "${admin}", clave: "${claveAdmin}"){
             token
         }
     }
 `;
-
+const credencialesCorrectasAsesor = `
+    mutation{
+        login(numeroDocumento: "${asesor}", clave: "${claveAsesor}"){
+            token
+        }
+    }
+`;
+const credencialesCorrectasUsuario = `
+    mutation{
+        login(numeroDocumento: "${usuario}", clave: "${claveUsuario}"){
+            error
+            token
+        }
+    }
+`;
+const claveIncorrecta = `
+    mutation{
+        login(numeroDocumento: "admin", clave:"12345"){
+            error
+        }
+    }
+`;
+const numeroDocumentoIncorrecto = `
+    mutation{
+        login(numeroDocumento: "54984216", clave:"uT9pL6iuHClcT1z"){
+            error
+        }
+    }
+`;
 describe("POST Request", () => {
     it("Rechaza el inicio de sesion cuando la contraseña es incorrecta", (done) => {
         request
             .post("/")
             .send({
-                query: wrongClave
+                query: claveIncorrecta
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -48,11 +60,11 @@ describe("POST Request", () => {
                 done();
             })
     });
-    it("Rechaza el inicio de sesion cuando el usuario no existe", (done) => {
+    it("Rechaza el inicio de sesion cuando el numeroDocumento no existe", (done) => {
         request
             .post("/")
             .send({
-                query: wrongUsuario
+                query: numeroDocumentoIncorrecto
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -62,11 +74,41 @@ describe("POST Request", () => {
                 done();
             })
     });
-    it("Acepta el inicio de sesion y retorna un token cuando las credenciales son correctas", (done) => {
+    it("Acepta el inicio de sesion, y retorna un token como administrador", (done) => {
         request
             .post("/")
             .send({
-                query: correctCredentials
+                query: credencialesCorrectasAdministrador
+            })
+            .set("Accept", "application/json")
+            .expect(200)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.body.data.login.token).to.be.a("string");
+                assert.graphQL(res.body);
+                done();
+            })
+    });
+    it("Acepta el inicio de sesion, y retorna un token como asesor", (done) => {
+        request
+            .post("/")
+            .send({
+                query: credencialesCorrectasAsesor
+            })
+            .set("Accept", "application/json")
+            .expect(200)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.body.data.login.token).to.be.a("string");
+                assert.graphQL(res.body);
+                done();
+            })
+    });
+    it("Acepta el inicio de sesion, y retorna un token como usuario", (done) => {
+        request
+            .post("/")
+            .send({
+                query: credencialesCorrectasUsuario
             })
             .set("Accept", "application/json")
             .expect(200)

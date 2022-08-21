@@ -1,18 +1,23 @@
-import { obtenerUsuarios } from "./query/usuario/obtenerUsuarios";
-import { obtenerUsuarioPorId } from "./query/usuario/obtenerUsuarioPorId";
+import { login } from "./mutation/login";
+import { crearGiro } from "./mutation/giro/crearGiro";
+import { editarGiro } from "./mutation/giro/editarGiro";
+import { eliminarGiro } from "./mutation/giro/eliminarGiro";
+import { obtenerGiros } from "./query/giro/obtenerGiros";
+import { obtenerGiroPorId } from "./query/giro/obtenerGiroPorId";
+import { obtenerGirosPorIdUsuario } from "./query/giro/obtenerGirosPorIdUsuario";
 import { crearUsuario } from "./mutation/usuario/crearUsuario";
 import { editarUsuario } from "./mutation/usuario/editarUsuario";
 import { eliminarUsuario } from "./mutation/usuario/eliminarUsuario";
-import { crearGiro } from "./mutation/giro/crearGiro";
-import { obtenerGiros } from "./query/giro/obtenerGiros";
-import { obtenerGiroPorId } from "./query/giro/obtenerGiroPorId";
-import { editarGiro } from "./mutation/giro/editarGiro";
-import { eliminarGiro } from "./mutation/giro/eliminarGiro";
-import { login } from "./mutation/login";
+import { obtenerUsuarios } from "./query/usuario/obtenerUsuarios";
+import { obtenerUsuarioPorId } from "./query/usuario/obtenerUsuarioPorId";
+import { crearAsesor } from "./mutation/asesor/creaAsesor";
+import { editarAsesor } from "./mutation/asesor/editarAsesor";
+import { eliminarAsesor } from "./mutation/asesor/eliminarAsesor";
+import { obtenerAsesores } from "./query/asesor/obtenerAsesores";
+import { obtenerAsesorPorId } from "./query/asesor/obtenerAsesorPorId";
+
 import { crearComprobantePago } from "./mutation/crearComprobantePago";
 import { eliminarComprobantePago } from "./mutation/eliminarComprobantePago";
-import { obtenerGirosPorIdUsuario } from "./query/giro/obtenerGirosPorIdUsuario";
-import { crearAsesor } from "./mutation/asesor/creaAsesor";
 
 export const resolvers = {
     Query:{},
@@ -26,6 +31,8 @@ resolvers.Query.obtenerGiros = obtenerGiros;
 resolvers.Query.obtenerGiroPorId = obtenerGiroPorId;
 resolvers.Query.obtenerGirosPorIdUsuario = obtenerGirosPorIdUsuario;
 
+resolvers.Query.obtenerAsesores = obtenerAsesores;
+resolvers.Query.obtenerAsesorPorId = obtenerAsesorPorId;
 
 resolvers.Mutation.login = login;
 resolvers.Mutation.crearUsuario = crearUsuario;
@@ -40,3 +47,5 @@ resolvers.Mutation.crearComprobantePago = crearComprobantePago;
 resolvers.Mutation.eliminarComprobantePago = eliminarComprobantePago;
 
 resolvers.Mutation.crearAsesor = crearAsesor;
+resolvers.Mutation.editarAsesor = editarAsesor;
+resolvers.Mutation.eliminarAsesor = eliminarAsesor;

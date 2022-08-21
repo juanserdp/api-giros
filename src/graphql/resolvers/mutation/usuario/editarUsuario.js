@@ -31,8 +31,6 @@ export const editarUsuario = async (_root, { id, nombres, apellidos, tipoDocumen
         throw new Error("No estas autorizado!");
     }
 
-
-
     if (context.autorizacion &&
         context.rol === "USUARIO") {
         try {
