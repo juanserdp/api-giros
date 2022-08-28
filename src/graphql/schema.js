@@ -6,6 +6,7 @@ export const typeDefs = `
         """ USUARIOS """
         obtenerUsuarios: [Usuario]
         obtenerUsuarioPorId(id: ID!): Usuario
+        obtenerUsuariosPorIdAsesor(id: ID!): [Usuario]
 
         """ ASESORES """
         obtenerAsesores: [Asesor]
@@ -42,6 +43,8 @@ export const typeDefs = `
             numeroDocumento: String,
             clave: String,
             saldo: Float,
+            deuda: Float,
+            capacidadPrestamo: Float,
             estado: String
         ): Usuario
         eliminarUsuario(id: ID!): Usuario
@@ -54,17 +57,18 @@ export const typeDefs = `
             numeroDocumento: String!,
             clave: String!,
             saldo: Float!,
-            estado: String!
+            estado: String!,
         ): Asesor
         editarAsesor(
             id: ID!,
-            nombres: String!,
-            apellidos: String!,
-            tipoDocumento: String!,
-            numeroDocumento: String!,
-            clave: String!,
-            saldo: Float!,
-            estado: String!
+            nombres: String,
+            apellidos: String,
+            tipoDocumento: String,
+            numeroDocumento: String,
+            clave: String,
+            saldo: Float,
+            estado: String,
+            tasaVenta: Float!
         ): Asesor
         eliminarAsesor(id: ID!): Asesor
 
@@ -79,6 +83,7 @@ export const typeDefs = `
             tipoCuenta: String!,
             numeroCuenta: String!,
             valorGiro: Float!,
+            tasaCompra: Float!
         ): Giro
         editarGiro(
             id: ID!,
@@ -89,15 +94,15 @@ export const typeDefs = `
             banco: String,
             tipoCuenta: String,
             numeroCuenta: String,
-            valorGiro: Float
+            comprobantePago: String
         ): Giro
         eliminarGiro(id: ID!): Giro
-
 
         crearComprobantePago(id: ID!): Giro
         eliminarComprobantePago(id: ID!): Giro
     }
 
+    """ TIPOS """
     type Usuario{
         id: ID,
         asesor: ID,
@@ -123,7 +128,9 @@ export const typeDefs = `
         tipoCuenta: String,
         numeroCuenta: String,
         valorGiro: Float,
-        comprobantePago: String
+        comprobantePago: String,
+        fechaEnvio: String,
+        tasaCompra: Float
     }
     type Asesor{
         id: ID,
@@ -134,7 +141,8 @@ export const typeDefs = `
         clave: String,
         saldo: Float,
         usuarios: [Usuario],
-        estado: String
+        estado: String,
+        tasaVenta: Float
     }
     type Token{
         token: String,

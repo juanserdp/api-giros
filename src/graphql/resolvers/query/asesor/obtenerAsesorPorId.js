@@ -5,12 +5,11 @@ export const obtenerAsesorPorId = async (_root, {id}, context) => {
         (context.rol === "ASESOR" ||
             context.rol === "ADMINISTRADOR")) {
         try {
-            const asesores = await Asesor.findById(id, function (error, rta) {
-                if (error) return console.error(`Ocurrio un error interno de mongo al intentar obtener todos los asesores, el error es: ${error}`, " from obtenerAsesoresPorId.js");
-                else if(rta) console.log(rta);
-            }).clone().populate("usuarios");
-            if(asesores) return asesores;
-            else throw new Error(`Ocurrio un error al intentar obtener todos los asesores`, " from obtenerAsesoresPorId.js");
+            const asesor = await Asesor.findById(id).populate("usuarios");
+            console.log(asesor.populated("usuarios"));
+            return asesor;
+            // if(asesor) return asesor;
+            // else throw new Error(`Ocurrio un error al intentar obtener todos los asesores`, " from obtenerAsesoresPorId.js");
         }
         catch (e) {
             console.error(e, " from obtenerAsesoresPorId.js");

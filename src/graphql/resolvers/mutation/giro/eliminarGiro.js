@@ -1,19 +1,21 @@
 import Giro from "../../../../models/Giro";
 
 export const eliminarGiro = async (_root, { id }, context) => {
-    if (context.autorizacion && context.uid === "admin") {
+    if (context.autorizacion &&
+        (context.rol === "ASESOR" ||
+            context.rol === "ADMINISTRADOR")) {
         try {
-            return await Giro.findByIdAndDelete(id, function (err, doc) {
-                if (err) return { error: `Hubo un error al intentar eliminar el giro con id: ${id}` };
-                else console.log(doc);
+            return await Giro.findByIdAndDelete(id, function (error, rta) {
+                if (error) return console.error(`Ocurrio un error interno de mongo al intentar eliminar el giro con id: ${id}, el error es: ${error}`, " from eliminarGiro.js");
+                else if (rta) console.log(rta, " from eliminarGiro.js");
             }).clone();
         } catch (error) {
-            console.error(error);
+            console.error(error, " from eliminarGiro.js");
             throw new Error(error);
         }
     }
     else {
-        console.error("No estas autorizado!");
+        console.error("No estas autorizado!", " from eliminarGiro.js");
         throw new Error("No estas autorizado!");
     }
 }

@@ -1,22 +1,23 @@
 import Giro from "../../../../models/Giro";
 
-export const editarGiro = async (_root, { id, nombres, apellidos, tipoDocumento, numeroDocumento, banco, tipoCuenta, numeroCuenta, valorGiro}, context) => {
+export const editarGiro = async (_root, {id, nombres, apellidos, tipoDocumento, numeroDocumento, banco, tipoCuenta, numeroCuenta, comprobantePago }, context) => {
     if (context.autorizacion &&
-        (context.uid === "admin" ||
-        context.rol === "asesor")) {
+        (context.rol === "ASESOR" ||
+            context.rol === "ADMINISTRADOR")) {
         try {
             return await Giro.findByIdAndUpdate(id, {
                 nombres,
                 apellidos,
                 tipoDocumento,
                 numeroDocumento,
-                banco, 
+                banco,
                 tipoCuenta,
                 numeroCuenta,
-                valorGiro
-            }, function (err, doc) {
-                if (err) return { error: `Hubo un error al intentar editar el giro con id: ${id}` };
-                else console.log(doc);
+                // valorGiro, EL DINERO NO SE EDITA, GIRO ENVIADO GIRO PAGADO
+                comprobantePago
+            }, function (error, rta) {
+                if (error) return console.error(`Ocurrio un error interno de mongo al intentar editar el giro con id: ${id}, el error es: ${error}`, " from crearGiro.js");
+                else if (rta) console.log(rta, " from crearGiro.js");
             }).clone();
         } catch (error) {
             console.error(error);
@@ -24,7 +25,7 @@ export const editarGiro = async (_root, { id, nombres, apellidos, tipoDocumento,
         }
     }
     else {
-        console.error("No estas autorizado!");
+        console.error("No estas autorizado!", " from crearGiro.js");
         throw new Error("No estas autorizado!");
     }
 }

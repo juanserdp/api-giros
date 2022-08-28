@@ -10,6 +10,8 @@ import { editarUsuario } from "./mutation/usuario/editarUsuario";
 import { eliminarUsuario } from "./mutation/usuario/eliminarUsuario";
 import { obtenerUsuarios } from "./query/usuario/obtenerUsuarios";
 import { obtenerUsuarioPorId } from "./query/usuario/obtenerUsuarioPorId";
+import { obtenerUsuariosPorIdAsesor } from "./query/usuario/obtenerUsuariosPorIdAsesor";
+
 import { crearAsesor } from "./mutation/asesor/creaAsesor";
 import { editarAsesor } from "./mutation/asesor/editarAsesor";
 import { eliminarAsesor } from "./mutation/asesor/eliminarAsesor";
@@ -26,6 +28,7 @@ export const resolvers = {
 
 resolvers.Query.obtenerUsuarios = obtenerUsuarios;
 resolvers.Query.obtenerUsuarioPorId = obtenerUsuarioPorId;
+resolvers.Query.obtenerUsuariosPorIdAsesor = obtenerUsuariosPorIdAsesor;
 
 resolvers.Query.obtenerGiros = obtenerGiros;
 resolvers.Query.obtenerGiroPorId = obtenerGiroPorId;

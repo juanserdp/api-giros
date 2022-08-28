@@ -3,22 +3,22 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const crearComprobantePago = async (_root, { id }, context) => {
     if (context.autorizacion &&
-        (context.uid === "admin" ||
-        context.rol === "asesor")) {
+        (context.rol === "ASESOR" ||
+            context.rol === "ADMINISTRADOR")) {
         try {
             return await Giro.findByIdAndUpdate(id, {
                 comprobantePago: uuidv4()
-            }, function (err, doc) {
-                if (err) return { error: `Hubo un error al intentar crear el comprobante de pago al giro con id: ${id}` };
-                else console.log(doc);
+            }, function (error, rta) {
+                if (error) console.error(`Ocurrio un error al intentar crear un comprobante de pago, el error es: ${error}`, "from crearComprobantePago.js");
+                else if (rta) console.log(rta, "from crearComprobantePago.js");
             }).clone();
         } catch (error) {
-            console.error(error);
+            console.error(error, "from crearComprobantePago.js");
             throw new Error(error);
         }
     }
     else {
-        console.error("No estas autorizado!");
+        console.error("No estas autorizado!", "from crearComprobantePago.js");
         throw new Error("No estas autorizado!");
     }
 }

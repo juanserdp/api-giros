@@ -36,6 +36,10 @@ const AsesorSchema = new Schema({
         requried: true,
         enum:['ACTIVO','INACTIVO'],
         default: 'ACTIVO'
+    },
+    tasaVenta:{
+        type: Number,
+        required: true
     }
 }, { collection: "Asesores" });
 

@@ -1,16 +1,16 @@
 import Usuario from "../../../../models/Usuario";
 
-export const obtenerUsuarios = async (_root, {id}, context) => {
+export const obtenerUsuariosPorIdAsesor = async (_root, {id}, context) => {
     if (context.autorizacion &&
         (context.rol === "ASESOR" ||
-            context.rol === "ADMINISTRADOR")) {//context.autorizacion && context.uid === "admin"
+            context.rol === "ADMINISTRADOR")) {
         try {
-            let usuarios;
-            if(usuarios = await Usuario.find({}, function (error, rta) {
-                if (error) return console.error(`Ocurrio un error interno de mongo al intentar obtener todos los usuarios, el error es: ${error}`);
-                else if(rta) console.log(rta);
-            }).clone().populate("giros")) return usuarios;
-            throw new Error(`Ocurrio un error al intentar obtener todos los usuarios`);
+            let usuarios = await Usuario.find({asesor: id}, function (error, rta) {
+                if (error) return console.error(`Ocurrio un error interno de mongo al intentar obtener todos los usuarios por el id del asesor: ${id}, el error es: ${error}`, "from obtenerUsuariosPorIdAsesor.js");
+                else if(rta) console.log(rta, "from obtenerUsuariosPorIdAsesor.js");
+            }).clone();
+            if(usuarios) return usuarios;
+            throw new Error(`Ocurrio un error al intentar obtener todos los usuarios`, "from obtenerUsuariosPorIdAsesor.js");
         }
         catch (e) {
             console.error(e);
@@ -18,7 +18,7 @@ export const obtenerUsuarios = async (_root, {id}, context) => {
         }
     }
     else {
-        console.error("No estas autorizado!");
+        console.error("No estas autorizado!", "from obtenerUsuariosPorIdAsesor.js");
         throw new Error("No estas autorizado!");
     }
 }

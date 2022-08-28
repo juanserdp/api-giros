@@ -45,6 +45,10 @@ const GiroSchema = new Schema({
     fechaEnvio: {
         type: String,
         requried: true
+    },
+    tasaCompra:{
+        type: Number,
+        required: true
     }
 }, { collection: "Giros" });
 
