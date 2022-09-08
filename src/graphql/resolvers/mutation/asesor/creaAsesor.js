@@ -6,7 +6,6 @@ export const crearAsesor = async (_root, { nombres, apellidos, tipoDocumento, nu
     if (context.autorizacion &&
         (context.rol === "ADMINISTRADOR")) {
         /*/ VALIDAR QUE ESTE USUARIO NO SE HAYA REGISTRADO ANTES/*/
-
         try {
             let user = await Asesor.find({ numeroDocumento }, function (error, rta) {
                 if (error) return console.error(`Ocurrio un error interno de mongo al intentar buscar entre todos los asesores un asesor con ese documento, el error es: ${error}`, " from crearAsesor.js");

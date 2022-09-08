@@ -8,7 +8,7 @@ export const obtenerUsuariosPorIdAsesor = async (_root, {id}, context) => {
             let usuarios = await Usuario.find({asesor: id}, function (error, rta) {
                 if (error) return console.error(`Ocurrio un error interno de mongo al intentar obtener todos los usuarios por el id del asesor: ${id}, el error es: ${error}`, "from obtenerUsuariosPorIdAsesor.js");
                 else if(rta) console.log(rta, "from obtenerUsuariosPorIdAsesor.js");
-            }).clone();
+            }).clone().populate("giros").populate("asesor");
             if(usuarios) return usuarios;
             throw new Error(`Ocurrio un error al intentar obtener todos los usuarios`, "from obtenerUsuariosPorIdAsesor.js");
         }

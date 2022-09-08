@@ -20,7 +20,7 @@ export const editarUsuario = async (_root, { id, nombres, apellidos, tipoDocumen
                     apellidos,
                     tipoDocumento,
                     numeroDocumento,
-                    clave,
+                    clave: bycript.hashSync(clave, salt),
                     saldo,
                     deuda,
                     capacidadPrestamo,

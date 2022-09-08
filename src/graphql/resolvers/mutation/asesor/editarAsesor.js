@@ -35,12 +35,7 @@ export const editarAsesor = async (_root, { id, nombres, apellidos, tipoDocument
             throw new Error(error);
         }
     }
-    else {
-        console.error("No estas autorizado!", " from editarAsesor.js");
-        throw new Error("No estas autorizado!");
-    }
-    
-    if (context.autorizacion &&
+    else if (context.autorizacion &&
         context.rol === "ASESOR") {
         try {
             /*/ VALIDAR QUE EL TIPO DE DOCUMENTO NO SE REPITA/*/

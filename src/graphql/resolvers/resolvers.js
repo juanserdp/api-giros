@@ -20,6 +20,11 @@ import { obtenerAsesorPorId } from "./query/asesor/obtenerAsesorPorId";
 
 import { crearComprobantePago } from "./mutation/crearComprobantePago";
 import { eliminarComprobantePago } from "./mutation/eliminarComprobantePago";
+import { recargarAsesor } from "./mutation/asesor/recargarAsesor";
+
+import { definirConfiguracion } from "./query/definirConfiguracion";
+import { editarConfiguracion } from "./query/editarConfiguracion";
+import { obtenerConfiguracion } from "./query/obtenerConfiguracion";
 
 export const resolvers = {
     Query:{},
@@ -52,3 +57,9 @@ resolvers.Mutation.eliminarComprobantePago = eliminarComprobantePago;
 resolvers.Mutation.crearAsesor = crearAsesor;
 resolvers.Mutation.editarAsesor = editarAsesor;
 resolvers.Mutation.eliminarAsesor = eliminarAsesor;
+
+resolvers.Mutation.recargarAsesor = recargarAsesor;
+
+resolvers.Mutation.definirConfiguracion = definirConfiguracion;
+resolvers.Mutation.editarConfiguracion = editarConfiguracion;
+resolvers.Query.obtenerConfiguracion = obtenerConfiguracion;

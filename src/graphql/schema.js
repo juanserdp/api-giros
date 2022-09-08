@@ -16,6 +16,9 @@ export const typeDefs = `
         obtenerGiros: [Giro]
         obtenerGiroPorId(id: ID!): Giro
         obtenerGirosPorIdUsuario(id: ID!): [Giro]
+
+        """ CONFIGURACION """
+        obtenerConfiguracion: Configuracion
     }
 
     type Mutation{
@@ -71,6 +74,11 @@ export const typeDefs = `
             tasaVenta: Float!
         ): Asesor
         eliminarAsesor(id: ID!): Asesor
+        recargarAsesor(
+            numeroDocumento: String!,
+            valorRecarga: Float!
+        ): Asesor!
+
 
         """ GIROS """
         crearGiro(
@@ -100,12 +108,35 @@ export const typeDefs = `
 
         crearComprobantePago(id: ID!): Giro
         eliminarComprobantePago(id: ID!): Giro
+
+        """ CONFIGURACION """
+        definirConfiguracion(
+            buzon: [String!],
+            valorMinimoGiro: Float!,
+            valorMinimoRecarga: Float!
+        ): Configuracion
+        editarConfiguracion(
+            buzon: [String!],
+            valorMinimoGiro: Float,
+            valorMinimoRecarga: Float
+        ): Configuracion
+    }
+
+
+    """ INTERFACES """
+    interface DatosPersonales{
+        id: ID,
+        nombres: String,
+        apellidos: String,
+        tipoDocumento: String,
+        numeroDocumento: String
     }
 
     """ TIPOS """
-    type Usuario{
+
+    type Usuario implements DatosPersonales{
         id: ID,
-        asesor: ID,
+        asesor: Asesor,
         nombres: String,
         apellidos: String,
         tipoDocumento: String,
@@ -117,7 +148,7 @@ export const typeDefs = `
         giros: [Giro],
         estado: String
     }
-    type Giro{
+    type Giro implements DatosPersonales{
         id: ID,
         usuario: ID,
         nombres: String,
@@ -132,7 +163,7 @@ export const typeDefs = `
         fechaEnvio: String,
         tasaCompra: Float
     }
-    type Asesor{
+    type Asesor implements DatosPersonales{
         id: ID,
         nombres: String,
         apellidos: String,
@@ -147,6 +178,12 @@ export const typeDefs = `
     type Token{
         token: String,
         error: String
+    }
+    type Configuracion{
+        id: ID,
+        buzon: [String],
+        valorMinimoGiro: Float,
+        valorMinimoRecarga: Float
     }
 `;
 

@@ -9,7 +9,7 @@ export const obtenerUsuarioPorId = async (_root, { id }, context) => {
             let usuario = await Usuario.findById(id, function (error, rta) {
                 if (error) return console.error(`Ocurrio un error interno de mongo al intentar obtener el usuario con id: ${id}, el error es: ${error}`, "from obtenerUsuarioPorId.js")
                 else if (rta) console.log(rta, "from obtenerUsuarioPorId.js");
-            }).clone().populate("giros");
+            }).clone().populate("giros").populate("asesor");
             if (usuario) return usuario;
             else throw new Error(`Ocurrio un error al intentar obtener el usuario con id: ${id}, porfavor revise que el id proporcionado exista.`);
         }
