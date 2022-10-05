@@ -1,31 +1,37 @@
+import AuthorizationError from "../../../../errors/AuthorizationError";
+import { handleResponse } from "../../../../helpers/handleResponse";
 import Giro from "../../../../models/Giro";
 
-export const editarGiro = async (_root, {id, nombres, apellidos, tipoDocumento, numeroDocumento, banco, tipoCuenta, numeroCuenta, comprobantePago }, context) => {
+export const editarGiro = async (_root, {
+    id,
+    giro
+}, context) => {
     if (context.autorizacion &&
-        (context.rol === "ASESOR" ||
-            context.rol === "ADMINISTRADOR")) {
+        (context.rol === "USUARIO" ||
+            context.rol === "ASESOR" ||
+            context.rol === "ADMINISTRADOR" ||
+            context.rol === "OPERARIO")) {
         try {
-            return await Giro.findByIdAndUpdate(id, {
-                nombres,
-                apellidos,
-                tipoDocumento,
-                numeroDocumento,
-                banco,
-                tipoCuenta,
-                numeroCuenta,
-                // valorGiro, EL DINERO NO SE EDITA, GIRO ENVIADO GIRO PAGADO
-                comprobantePago
-            }, function (error, rta) {
-                if (error) return console.error(`Ocurrio un error interno de mongo al intentar editar el giro con id: ${id}, el error es: ${error}`, " from crearGiro.js");
-                else if (rta) console.log(rta, " from crearGiro.js");
-            }).clone();
+            const giroData = await Giro.findById(id);
+            if (giroData) {
+                const { estadoGiro } = giroData;
+                if (estadoGiro === "PENDIENTE" ||
+                    (estadoGiro === "EN PROCESO" && context.rol === "OPERARIO")) {
+                    const giroModificado = await Giro.findByIdAndUpdate(
+                        id,
+                        giro,
+                        { new: true },
+                        (error, data) => handleResponse(error, data, "Editar Giro"))
+                        .clone();
+                    if (giroModificado) return giroModificado;
+                    else throw new Error("No se pudo editar el giro!");
+                }
+                else throw new Error(`No se pudo editar el giro porque su estado es: ${estadoGiro}!`)
+            }
+            else throw new Error("No se pudo obtener el giro para editar!");
         } catch (error) {
-            console.error(error);
             throw new Error(error);
-        }
+        };
     }
-    else {
-        console.error("No estas autorizado!", " from crearGiro.js");
-        throw new Error("No estas autorizado!");
-    }
+    else throw new AuthorizationError("No estas autorizado!");
 }

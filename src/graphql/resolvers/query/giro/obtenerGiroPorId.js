@@ -1,3 +1,4 @@
+import AuthorizationError from "../../../../errors/AuthorizationError";
 import Giro from "../../../../models/Giro";
 
 export const obtenerGiroPorId = async (_root, { id }, context) => {
@@ -6,20 +7,16 @@ export const obtenerGiroPorId = async (_root, { id }, context) => {
             context.rol === "ASESOR" ||
             context.rol === "ADMINISTRADOR")) {
         try {
-            let giro = await Giro.findById(id, function (error, rta) {
-                if (error) console.error(`Ocurrio un error interno de mongo al intentar obtener el giro con id: ${id}, el error es: ${error}`, "from obtenerGiroPorId.js");
-                else if (rta) console.log(rta, "from obtenerGiroPorId.js");
-            }).clone();
+            const giro = await Giro.findById(
+                id,
+                (error, data) => handleResponse(error, data, "Obtener Giro Por Id"))
+                .clone();
             if (giro) return giro;
-            throw new Error(`Ocurrio un error al intentar obtener el giro con id: ${id}, porfavor revise que el id proporcionado exista.`);
+            throw new Error("No se pudo obtener el giro!");
         }
         catch (e) {
-            console.error(e.message, "from obtenerGiroPorId.js");
             throw new Error(e);
         }
     }
-    else {
-        console.error("No estas autorizado!", "from obtenerGiroPorId.js");
-        throw new Error("No estas autorizado!");
-    }
+    else throw new AuthorizationError("No estas autorizado!");
 }

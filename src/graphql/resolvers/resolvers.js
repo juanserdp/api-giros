@@ -1,4 +1,4 @@
-import { login } from "./mutation/login";
+import { login } from "./mutation/login/login";
 import { crearGiro } from "./mutation/giro/crearGiro";
 import { editarGiro } from "./mutation/giro/editarGiro";
 import { eliminarGiro } from "./mutation/giro/eliminarGiro";
@@ -12,19 +12,22 @@ import { obtenerUsuarios } from "./query/usuario/obtenerUsuarios";
 import { obtenerUsuarioPorId } from "./query/usuario/obtenerUsuarioPorId";
 import { obtenerUsuariosPorIdAsesor } from "./query/usuario/obtenerUsuariosPorIdAsesor";
 
-import { crearAsesor } from "./mutation/asesor/creaAsesor";
+import { crearAsesor } from "./mutation/asesor/crearAsesor";
 import { editarAsesor } from "./mutation/asesor/editarAsesor";
 import { eliminarAsesor } from "./mutation/asesor/eliminarAsesor";
 import { obtenerAsesores } from "./query/asesor/obtenerAsesores";
 import { obtenerAsesorPorId } from "./query/asesor/obtenerAsesorPorId";
 
-import { crearComprobantePago } from "./mutation/crearComprobantePago";
-import { eliminarComprobantePago } from "./mutation/eliminarComprobantePago";
-import { recargarAsesor } from "./mutation/asesor/recargarAsesor";
+import { crearComprobantePago } from "./mutation/giro/comprobante_pago/crearComprobantePago";
+import { editarComprobantePago } from "./mutation/giro/comprobante_pago/editarComprobantePago";
 
-import { definirConfiguracion } from "./query/definirConfiguracion";
-import { editarConfiguracion } from "./query/editarConfiguracion";
-import { obtenerConfiguracion } from "./query/obtenerConfiguracion";
+import { recargarAsesor } from "./mutation/asesor/recargarAsesor";
+import { recargarUsuario } from "./mutation/usuario/recargarUsuario";
+
+import { crearConfiguracion } from "./mutation/configuracion/crearConfiguracion";
+import { editarConfiguracion } from "./mutation/configuracion/editarConfiguracion";
+import { obtenerConfiguraciones } from "./query/configuracion/obtenerConfiguraciones";
+import { obtenerGirosPorUsuariosPorIdAsesor } from "./query/giro/obtenerGirosPorUsuariosPorIdAsesor";
 
 export const resolvers = {
     Query:{},
@@ -38,6 +41,7 @@ resolvers.Query.obtenerUsuariosPorIdAsesor = obtenerUsuariosPorIdAsesor;
 resolvers.Query.obtenerGiros = obtenerGiros;
 resolvers.Query.obtenerGiroPorId = obtenerGiroPorId;
 resolvers.Query.obtenerGirosPorIdUsuario = obtenerGirosPorIdUsuario;
+resolvers.Query.obtenerGirosPorUsuariosPorIdAsesor = obtenerGirosPorUsuariosPorIdAsesor;
 
 resolvers.Query.obtenerAsesores = obtenerAsesores;
 resolvers.Query.obtenerAsesorPorId = obtenerAsesorPorId;
@@ -52,14 +56,15 @@ resolvers.Mutation.editarGiro = editarGiro;
 resolvers.Mutation.eliminarGiro = eliminarGiro;
 
 resolvers.Mutation.crearComprobantePago = crearComprobantePago;
-resolvers.Mutation.eliminarComprobantePago = eliminarComprobantePago;
+resolvers.Mutation.editarComprobantePago = editarComprobantePago;
 
 resolvers.Mutation.crearAsesor = crearAsesor;
 resolvers.Mutation.editarAsesor = editarAsesor;
 resolvers.Mutation.eliminarAsesor = eliminarAsesor;
 
 resolvers.Mutation.recargarAsesor = recargarAsesor;
+resolvers.Mutation.recargarUsuario = recargarUsuario;
 
-resolvers.Mutation.definirConfiguracion = definirConfiguracion;
+resolvers.Mutation.crearConfiguracion = crearConfiguracion;
 resolvers.Mutation.editarConfiguracion = editarConfiguracion;
-resolvers.Query.obtenerConfiguracion = obtenerConfiguracion;
+resolvers.Query.obtenerConfiguraciones = obtenerConfiguraciones;

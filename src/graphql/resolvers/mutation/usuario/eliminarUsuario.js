@@ -1,3 +1,5 @@
+import AuthorizationError from "../../../../errors/AuthorizationError";
+import { handleResponse } from "../../../../helpers/handleResponse";
 import Usuario from "../../../../models/Usuario";
 
 export const eliminarUsuario = async (_root, { id }, context) => {
@@ -5,18 +7,12 @@ export const eliminarUsuario = async (_root, { id }, context) => {
         (context.rol === "ASESOR" ||
             context.rol === "ADMINISTRADOR")) {
         try {
-            let rtaUsuarioDelete = await Usuario.findByIdAndDelete(id, function (error, doc) {
-                if (error) console.error(`Hubo un error al intentar eliminar el usuario con id: ${id}. error: ${error} `, " from eliminarUsuario.js");
-                else if (doc) console.log("Usuario eliminado: ", doc, " from eliminarUsuario.js");
-            }).clone();
-            if(rtaUsuarioDelete) return rtaUsuarioDelete;
+            const usuarioEliminado = await Usuario.findByIdAndDelete(id);
+            if (usuarioEliminado) return usuarioEliminado;
+            else throw new Error("No se pudo eliminar el usuario!");
         } catch (error) {
-            console.error(error, " from eliminarUsuario.js");
             throw new Error(error);
         }
     }
-    else {
-        console.error("No estas autorizado!", " from eliminarUsuario.js");
-        throw new Error("No estas autorizado!");
-    }
+    else throw new AuthorizationError("No estas autorizado!");
 }

@@ -4,42 +4,40 @@ const UsuarioSchema = new Schema({
     asesor:{
         type: Schema.Types.ObjectId,
         ref: 'Asesor',
-        requried: true
+        required: true
     },
     nombres: {
         type: String,
-        requried: true
+        required: true
     },
     apellidos: {
         type: String,
-        requried: true
+        required: true
     },
     tipoDocumento: {
         type: String,
-        requried: true
+        required: true
     },
     numeroDocumento: {
         type: String,
-        requried: true
+        required: true
     },
     clave: {
         type: String,
-        requried: true
+        required: true
     },
     saldo: {
         type: Number,
-        requried: true,
-        default: 0
+        required: true // CREAR UN USUARIO - ES OBLIGATORIO - EL SALDO
     },
     deuda: {
         type: Number,
-        requried: true,
-        default: 0
+        required: false,
+        default: 0 // CREAR UN USUARIO - POR DEFECTO - DEUDA = 0
     },
     capacidadPrestamo: {
         type: Number,
-        requried: true,
-        default: 0
+        required: true // CREAR UN USUARIO - ES OBLIGATORIO - CAPACIDAD DE PRESTAMO
     },
     giros: [{
             type: Schema.Types.ObjectId,
@@ -48,9 +46,13 @@ const UsuarioSchema = new Schema({
         }],
     estado: {
         type: String,
-        requried: true,
+        required: false,
         enum:['ACTIVO','INACTIVO'],
-        default: 'ACTIVO'
+        default: 'ACTIVO' // CREAR UN USUARIO - POR DEFECTO - ESTADO = "ACTIVO"
+    },
+    tasaVenta: {
+        type: Number,
+        required: true //  CREAR UN USUARIO - ES OBLIGATORIO - TASA DE VENTA
     }
 }, { collection: "Usuarios" });
 

@@ -1,8 +1,8 @@
-import { generarJwt } from "../../../helpers/generarJwt";
-import Usuario from "../../../models/Usuario";
+import { generarJwt } from "../../../../helpers/generarJwt";
+import Usuario from "../../../../models/Usuario";
 import bycript from "bcrypt";
-import Asesor from "../../../models/Asesor";
-import autenticarCredenciales from "../../../helpers/autenticarCrendenciales";
+import Asesor from "../../../../models/Asesor";
+import autenticarCredenciales from "../../../../helpers/autenticarCrendenciales";
 
 export const login = async (_, { numeroDocumento, clave }, context) => {
     try {
@@ -22,6 +22,10 @@ export const login = async (_, { numeroDocumento, clave }, context) => {
             if (numeroDocumento === "admin")
                 if (bycript.compareSync(clave, asesor[0].clave))
                     return { token: await generarJwt("admin", asesor[0].estado, "ADMINISTRADOR") };
+            
+            if (numeroDocumento === "operario")
+                if (bycript.compareSync(clave, asesor[0].clave))
+                    return { token: await generarJwt("operario", asesor[0].estado, "OPERARIO") };
 
             if (resultAut = autenticarCredenciales(asesor, numeroDocumento, clave, (error) => { if (error) console.error(error); })) {
                 if (resultAut.hasOwnProperty("error")) return resultAut;

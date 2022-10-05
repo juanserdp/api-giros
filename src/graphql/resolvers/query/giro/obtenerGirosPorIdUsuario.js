@@ -1,24 +1,23 @@
+import AuthorizationError from "../../../../errors/AuthorizationError";
+import { handleResponse } from "../../../../helpers/handleResponse";
 import Giros from "../../../../models/Giro";
-export const obtenerGirosPorIdUsuario = async (_root, {id}, context) => {
+export const obtenerGirosPorIdUsuario = async (_root, { id }, context) => {
     if (context.autorizacion &&
         (context.rol === "USUARIO" ||
             context.rol === "ASESOR" ||
-            context.rol === "ADMINISTRADOR")) {
+            context.rol === "ADMINISTRADOR" ||
+            context.rol === "OPERARIO")) {
         try {
-            let giros;
-            if(giros = await Giros.find({usuario: id}, function (error, rta) {
-                if (error) console.error(`Ocurrio un error interno de mongo al intentar obtener los giros del usuario con id: ${id}, el error es: ${error}`, "from obtenerGirosPorIdUsuario.js");
-                else if(rta) console.log(rta.giros, "from obtenerGirosPorIdUsuario.js");
-            }).clone()) return giros;
-            throw new Error(`Ocurrio un error al intentar obtener los giros del usuario con id: ${id}, porfavor revise que el id proporcionado exista.`);
+            const giros = await Giros.find(
+                { usuario: id },
+                (error, data) => handleResponse(error, data, "Obtener Giros Por Usuario"))
+                .clone();
+            if (giros) return giros;
+            else throw new Error(`No se obtuvo todos los giros del usuario!`);
         }
         catch (e) {
-            console.error(e, "from obtenerGirosPorIdUsuario.js");
             throw new Error(e);
         }
     }
-    else {
-        console.error("No estas autorizado!", "from obtenerGirosPorIdUsuario.js");
-        throw new Error("No estas autorizado!");
-    }
+    else throw new AuthorizationError("No estas autorizado!");
 }

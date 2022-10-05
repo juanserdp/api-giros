@@ -3,28 +3,27 @@ import { Schema, model } from "mongoose";
 const AsesorSchema = new Schema({
     nombres: {
         type: String,
-        requried: true
+        required: true
     },
     apellidos: {
         type: String,
-        requried: true
+        required: true
     },
     tipoDocumento: {
         type: String,
-        requried: true
+        required: true
     },
     numeroDocumento: {
         type: String,
-        requried: true
+        required: true
     },
     clave: {
         type: String,
-        requried: true,
+        required: true
     },
     saldo: {
         type: Number,
-        requried: true,
-        default: 0
+        required: true  // CREAR ASESOR - ES OBLIGATORIO - UN SALDO
     },
     usuarios: [{
         type: Schema.Types.ObjectId,
@@ -33,13 +32,19 @@ const AsesorSchema = new Schema({
     }],
     estado: {
         type: String,
-        requried: true,
-        enum:['ACTIVO','INACTIVO'],
+        required: false,
+        enum: ['ACTIVO', 'INACTIVO'],
         default: 'ACTIVO'
     },
-    tasaVenta:{
+    tasaVenta: {
         type: Number,
-        required: true
+        required: false, // CREAR ASESOR - POR DEFECTO - TASA VENTA = 0
+        default: 0
+    },
+    valorMinimoGiro: {
+        type: Number,
+        required: true,
+        default: 1
     }
 }, { collection: "Asesores" });
 

@@ -4,21 +4,22 @@ import { resolvers } from "./resolvers/resolvers";
 export const typeDefs = `
     type Query{
         """ USUARIOS """
-        obtenerUsuarios: [Usuario]
-        obtenerUsuarioPorId(id: ID!): Usuario
-        obtenerUsuariosPorIdAsesor(id: ID!): [Usuario]
+        obtenerUsuarios: [Usuario]! 
+        obtenerUsuarioPorId(id: ID!): Usuario!
+        obtenerUsuariosPorIdAsesor(id: ID!): [Usuario]!
 
         """ ASESORES """
-        obtenerAsesores: [Asesor]
-        obtenerAsesorPorId(id: ID!): Asesor
+        obtenerAsesores: [Asesor]!
+        obtenerAsesorPorId(id: ID!): Asesor!
 
         """ GIROS """
-        obtenerGiros: [Giro]
-        obtenerGiroPorId(id: ID!): Giro
-        obtenerGirosPorIdUsuario(id: ID!): [Giro]
+        obtenerGiros: [Giro]!
+        obtenerGiroPorId(id: ID!): Giro!
+        obtenerGirosPorIdUsuario(id: ID!): [Giro]!
+        obtenerGirosPorUsuariosPorIdAsesor(id: ID!): [Giro]!
 
         """ CONFIGURACION """
-        obtenerConfiguracion: Configuracion
+        obtenerConfiguraciones: [Configuracion]!
     }
 
     type Mutation{
@@ -26,7 +27,7 @@ export const typeDefs = `
         login(numeroDocumento: String!, clave: String!): Token!
         
         """ USUARIOS """
-        crearUsuario(
+        crearUsuario( 
             asesor: ID!,
             nombres: String!,
             apellidos: String!,
@@ -34,50 +35,42 @@ export const typeDefs = `
             numeroDocumento: String!,
             clave: String!,
             saldo: Float!,
-            deuda: Float!,
             capacidadPrestamo: Float!,
-            estado: String!
-        ): Usuario
+            tasaVenta: Float!
+            ): Usuario!
         editarUsuario(
-            id: ID!
-            nombres: String,
-            apellidos: String,
-            tipoDocumento: String,
-            numeroDocumento: String,
-            clave: String,
-            saldo: Float,
-            deuda: Float,
-            capacidadPrestamo: Float,
-            estado: String
-        ): Usuario
-        eliminarUsuario(id: ID!): Usuario
+            id: ID!,
+            usuario: UsuarioForUpdateInput!
+            ): Usuario!
+
+        eliminarUsuario(id: ID!): Usuario!
+        recargarUsuario(
+            numeroDocumento: String!,
+            valorRecarga: Float!
+            ): Usuario!
+
+
 
         """ ASESORES """
-        crearAsesor(
-            nombres: String!,
+        crearAsesor( 
+            nombres: String!, 
             apellidos: String!,
             tipoDocumento: String!,
             numeroDocumento: String!,
             clave: String!,
-            saldo: Float!,
-            estado: String!,
-        ): Asesor
-        editarAsesor(
+            saldo: Float!
+            ): Asesor! 
+        editarAsesor( 
             id: ID!,
-            nombres: String,
-            apellidos: String,
-            tipoDocumento: String,
-            numeroDocumento: String,
-            clave: String,
-            saldo: Float,
-            estado: String,
-            tasaVenta: Float!
-        ): Asesor
-        eliminarAsesor(id: ID!): Asesor
-        recargarAsesor(
+            asesor: AsesorForUpdateInput!
+            ): Asesor!
+        eliminarAsesor(
+            id: ID!
+            ): Asesor! 
+        recargarAsesor( 
             numeroDocumento: String!,
             valorRecarga: Float!
-        ): Asesor!
+            ): Asesor!
 
 
         """ GIROS """
@@ -92,36 +85,28 @@ export const typeDefs = `
             numeroCuenta: String!,
             valorGiro: Float!,
             tasaCompra: Float!
-        ): Giro
+            ): Giro!
         editarGiro(
             id: ID!,
-            nombres: String,
-            apellidos: String,
-            tipoDocumento: String,
-            numeroDocumento: String,
-            banco: String,
-            tipoCuenta: String,
-            numeroCuenta: String,
-            comprobantePago: String
-        ): Giro
-        eliminarGiro(id: ID!): Giro
+            giro: GiroForUpdateInput!
+            ): Giro!
+        eliminarGiro(id: ID!): Giro!
+        crearComprobantePago(id: ID!): Giro!
+        editarComprobantePago(id: ID!): Giro!
 
-        crearComprobantePago(id: ID!): Giro
-        eliminarComprobantePago(id: ID!): Giro
 
         """ CONFIGURACION """
-        definirConfiguracion(
+        crearConfiguracion(
+            asesor: ID!,
             buzon: [String!],
             valorMinimoGiro: Float!,
             valorMinimoRecarga: Float!
-        ): Configuracion
+        ): Configuracion!
         editarConfiguracion(
-            buzon: [String!],
-            valorMinimoGiro: Float,
-            valorMinimoRecarga: Float
-        ): Configuracion
+            asesor: ID!,
+            configuracion: ConfiguracionForUpdateInput!
+        ): Configuracion!
     }
-
 
     """ INTERFACES """
     interface DatosPersonales{
@@ -133,7 +118,6 @@ export const typeDefs = `
     }
 
     """ TIPOS """
-
     type Usuario implements DatosPersonales{
         id: ID,
         asesor: Asesor,
@@ -146,7 +130,8 @@ export const typeDefs = `
         deuda: Float,
         capacidadPrestamo: Float,
         giros: [Giro],
-        estado: String
+        estado: String,
+        tasaVenta: Float
     }
     type Giro implements DatosPersonales{
         id: ID,
@@ -161,7 +146,8 @@ export const typeDefs = `
         valorGiro: Float,
         comprobantePago: String,
         fechaEnvio: String,
-        tasaCompra: Float
+        tasaCompra: Float,
+        estadoGiro: String
     }
     type Asesor implements DatosPersonales{
         id: ID,
@@ -173,17 +159,56 @@ export const typeDefs = `
         saldo: Float,
         usuarios: [Usuario],
         estado: String,
-        tasaVenta: Float
+        tasaVenta: Float,
+        valorMinimoGiro: Float
     }
     type Token{
         token: String,
         error: String
     }
     type Configuracion{
-        id: ID,
-        buzon: [String],
+        valorMinimoGiro: Float
+    }
+
+    """ INPUTS """
+    input AsesorForUpdateInput{
+        nombres: String,
+        apellidos: String,
+        tipoDocumento: String,
+        numeroDocumento: String,
+        clave: String,
+        saldo: Float,
+        estado: String,
+        tasaVenta: Float,
+        valorMinimoGiro: Float
+    }
+    input UsuarioForUpdateInput{
+        nombres: String,
+        apellidos: String,
+        tipoDocumento: String,
+        numeroDocumento: String,
+        clave: String,
+        saldo: Float,
+        deuda: Float,
+        capacidadPrestamo: Float,
+        estado: String,
+        tasaVenta: Float
+    }
+    input GiroForUpdateInput{
+        nombres: String,
+        apellidos: String,
+        tipoDocumento: String,
+        numeroDocumento: String,
+        banco: String,
+        tipoCuenta: String,
+        numeroCuenta: String,
+        valorGiro: Float,
+        comprobantePago: String,
+        tasaCompra: Float,
+        estadoGiro: String
+    }
+    input ConfiguracionForUpdateInput{
         valorMinimoGiro: Float,
-        valorMinimoRecarga: Float
     }
 `;
 

@@ -1,24 +1,22 @@
+import AuthorizationError from "../../../../errors/AuthorizationError";
+import { handleResponse } from "../../../../helpers/handleResponse";
 import Giro from "../../../../models/Giro";
 
 export const obtenerGiros = async (_root, _args, context) => {
     if (context.autorizacion &&
-        (context.rol === "ASESOR" ||
-            context.rol === "ADMINISTRADOR")) {
+        (context.rol === "ADMINISTRADOR" ||
+        context.rol === "OPERARIO")) {
         try {
-            let giros = await Giro.find({}, function (error, rta) {
-                if (error) console.error(`Ocurrio un error al intentar obtener todos los giros, el error es: ${error}`, "from obtenerGiros.js");
-                else if (rta) console.log(rta, "from obtenerGiros.js");
-            }).clone();
+            const giros = await Giro.find(
+                {},
+                (error, data) => handleResponse(error, data, "Obtener Giros"))
+                .clone();
             if (giros) return giros;
-            throw new Error(`Ocurrio un error al intentar obtener todos los giros`);
+            else throw new Error(`Ocurrio un error al intentar obtener todos los giros`);
         }
         catch (e) {
-            console.error(e, "from obtenerGiros.js");
             throw new Error(e);
-        }
+        };
     }
-    else {
-        console.error("No estas autorizado!", "from obtenerGiros.js");
-        throw new Error("No estas autorizado!");
-    }
-}
+    else throw new AuthorizationError("No estas autorizado!");
+};

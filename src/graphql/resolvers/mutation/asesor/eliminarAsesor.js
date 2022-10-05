@@ -1,21 +1,17 @@
+import AuthorizationError from "../../../../errors/AuthorizationError";
 import Asesor from "../../../../models/Asesor";
+import { eliminarConfiguracion } from "../configuracion/eliminarConfiguracion";
 
 export const eliminarAsesor = async (_root, { id }, context) => {
     if (context.autorizacion &&
-            context.rol === "ADMINISTRADOR") {
+        context.rol === "ADMINISTRADOR") {
         try {
-            let rtaAsesorDelete = await Asesor.findByIdAndDelete(id, function (error, rta) {
-                if (error) console.error(`Hubo un error al intentar eliminar el Asesor con id: ${id}. error: ${error} `, " from eliminarAsesor.js");
-                else if (rta) console.log("Asesor eliminado: ", rta, " from eliminarAsesor.js");
-            }).clone();
-            if(rtaAsesorDelete) return rtaAsesorDelete;
+            const asesorEliminado = await Asesor.findByIdAndDelete(id);
+            if (asesorEliminado) return asesorEliminado;
+            else throw new Error("No se pudo eliminar el asesor!");
         } catch (e) {
-            console.error(e, " from eliminarAsesor.js");
             throw new Error(e);
         }
     }
-    else {
-        console.error("No estas autorizado!", " from eliminarAsesor.js");
-        throw new Error("No estas autorizado!");
-    }
-}
+    else throw new AuthorizationError("No estas autorizado!");
+};

@@ -1,55 +1,61 @@
 import { Schema, model } from "mongoose";
 
 const GiroSchema = new Schema({
-    usuario:{
+    usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        requried: true
+        required: true
     },
-    nombres:{
+    nombres: {
         type: String,
-        requried: true
+        required: true
     },
-    apellidos:{
+    apellidos: {
         type: String,
-        requried: true
+        required: true
     },
-    tipoDocumento:{
+    tipoDocumento: {
         type: String,
-        requried: true
+        required: true
     },
-    numeroDocumento:{
+    numeroDocumento: {
         type: String,
-        requried: true
+        required: true
     },
-    banco:{
+    banco: {
         type: String,
-        requried: true
+        required: true
     },
-    tipoCuenta:{
+    tipoCuenta: {
         type: String,
-        requried: true
+        required: true
     },
-    numeroCuenta:{
+    numeroCuenta: {
         type: String,
-        requried: true
+        required: true
     },
-    valorGiro:{ //OJO PORQUE QUE SENTIDO TIENE ENVIAR GIROS DE CERO PESOS
+    valorGiro: { //OJO PORQUE QUE SENTIDO TIENE ENVIAR GIROS DE CERO PESOS
         type: Number,
-        requried: true
+        required: true
     },
-    comprobantePago:{ // NOT REQUIRED
+    comprobantePago: { // NOT REQUIRED
         type: String,
-        requried: false
+        required: false
     },
     fechaEnvio: {
         type: String,
-        requried: true
+        required: true
     },
-    tasaCompra:{
+    tasaCompra: {
         type: Number,
         required: true
-    }
+    },
+    estadoGiro: {
+        type: String,
+        required: false,
+        enum: ['PENDIENTE', 'EN PROCESO', 'COMPLETADO'],
+        default: 'PENDIENTE' // ENVIAR UN GIRO - POR DEFECTO - ESTADO = "PENDIENTE"
+    },
 }, { collection: "Giros" });
 
 export default model("Giro", GiroSchema);

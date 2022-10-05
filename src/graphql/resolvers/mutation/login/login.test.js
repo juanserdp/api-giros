@@ -1,6 +1,7 @@
 import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
 import {usuario, claveUsuario, asesor, claveAsesor, admin, claveAdmin } from "../../../constants/cuentas";
+import { iniciarSesionComoAdmin, iniciarSesionComoAsesor, iniciarSesionComoUsuario } from "../../../constants/login";
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
 
@@ -59,7 +60,7 @@ describe("POST Request", () => {
                 expect(res.body.data.login.error).to.equal("Usuario o contraseña incorrectos");
                 done();
             })
-    });
+    }, 30000);
     it("Rechaza el inicio de sesion cuando el numeroDocumento no existe", (done) => {
         request
             .post("/")
@@ -73,12 +74,12 @@ describe("POST Request", () => {
                 expect(res.body.data.login.error).to.equal("Usuario o contraseña incorrectos");
                 done();
             })
-    });
+    }, 30000);
     it("Acepta el inicio de sesion, y retorna un token como administrador", (done) => {
         request
             .post("/")
             .send({
-                query: credencialesCorrectasAdministrador
+                query: iniciarSesionComoAdmin
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -88,12 +89,12 @@ describe("POST Request", () => {
                 assert.graphQL(res.body);
                 done();
             })
-    });
+    }, 30000);
     it("Acepta el inicio de sesion, y retorna un token como asesor", (done) => {
         request
             .post("/")
             .send({
-                query: credencialesCorrectasAsesor
+                query: iniciarSesionComoAsesor
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -103,12 +104,12 @@ describe("POST Request", () => {
                 assert.graphQL(res.body);
                 done();
             })
-    });
+    }, 30000);
     it("Acepta el inicio de sesion, y retorna un token como usuario", (done) => {
         request
             .post("/")
             .send({
-                query: credencialesCorrectasUsuario
+                query: iniciarSesionComoUsuario
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -118,5 +119,5 @@ describe("POST Request", () => {
                 assert.graphQL(res.body);
                 done();
             })
-    });
+    }, 30000);
 });

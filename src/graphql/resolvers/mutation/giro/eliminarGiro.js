@@ -5,10 +5,17 @@ export const eliminarGiro = async (_root, { id }, context) => {
         (context.rol === "ASESOR" ||
             context.rol === "ADMINISTRADOR")) {
         try {
-            return await Giro.findByIdAndDelete(id, function (error, rta) {
-                if (error) return console.error(`Ocurrio un error interno de mongo al intentar eliminar el giro con id: ${id}, el error es: ${error}`, " from eliminarGiro.js");
-                else if (rta) console.log(rta, " from eliminarGiro.js");
-            }).clone();
+            const giroData = await Giro.findById(id);
+            if (giroData) {
+                const { estadoGiro } = giroData;
+                if (estadoGiro == "COMPLETADO") {
+                    const giroEliminado = await Giro.findByIdAndDelete(id);
+                    if (giroEliminado) return giroEliminado;
+                    else throw new Error("No se pudo eliminar el giro!");
+                }
+                else throw new Error(`No se pudo eliminar el giro porque su estado es: ${estadoGiro}!`)
+            }
+            else throw new Error("No se pudo obtener el giro para editar!");
         } catch (error) {
             console.error(error, " from eliminarGiro.js");
             throw new Error(error);
