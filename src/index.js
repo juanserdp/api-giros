@@ -21,15 +21,13 @@ app.use(validarJwt);
 
 const storage = multer.diskStorage({
     destination: path.join(__dirname, 'public/uploads'),
-    filename: (req, file, cb, filename) => {
+    filename: (req, file, cb) => {
         cb(null, uuidv4() + path.extname(file.originalname))
     }
 });
-app.use(multer({storage}).single('image'));
 
-// app.use(router);
-app.post("/comprobante", async (req, res)=>{
-    console.log("****************",req.file);
+app.post("/subirComprobante", multer({storage}).single('comprobante'), async (req, res)=>{
+    
 });
 
 dbConnection();
