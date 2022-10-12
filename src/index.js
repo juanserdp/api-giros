@@ -1,13 +1,10 @@
 import express from "express";
 import cors from "cors";
 import schema from "./graphql/schema";
-import dotenv from 'dotenv';
-import multer from "multer";
-import path from "path";
+import dotenv from "dotenv";
 import { dbConnection } from "./database/config";
 import { graphqlHTTP } from "express-graphql";
 import { validarJwt } from "./middleware/validarJwt";
-import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 const app = express();
@@ -15,32 +12,29 @@ const app = express();
 app.use(cors());
 
 // MIDDLEWARE
-app.use(express.urlencoded({extended: false}));
-app.use(express.json({type:'*/*'}));
+var bodyParser = require("body-parser");
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
+app.use(express.json({ type: "*/*" }));
 app.use(validarJwt);
-
-const storage = multer.diskStorage({
-    destination: path.join(__dirname, 'public/uploads'),
-    filename: (req, file, cb) => {
-        cb(null, uuidv4() + path.extname(file.originalname))
-    }
-});
-
-app.post("/subirComprobante", multer({storage}).single('comprobante'), async (req, res)=>{
-    
-});
 
 dbConnection();
 
-app.use("/graphql", graphqlHTTP((req, res)=>({
+app.use(
+  "/graphql",
+  graphqlHTTP((req, res) => ({
     graphiql: true,
     schema: schema,
     context: {
-        autorizacion: req.user.autorizacion,
-        uid: req.user.uid,
-        estado: req.user.estado,
-        rol: req.user.rol
-    }
-})));
+      autorizacion: req.user.autorizacion,
+      uid: req.user.uid,
+      estado: req.user.estado,
+      rol: req.user.rol,
+    },
+  }))
+);
 
-app.listen(process.env.PORT || 4000, ()=>console.log(`Servidor corriendo en el puerto: ${process.env.PORT || 4000}`));
+app.listen(process.env.PORT || 4000, () =>
+  console.log(`Servidor corriendo en el puerto: ${process.env.PORT || 4000}`)
+);

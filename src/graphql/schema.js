@@ -213,6 +213,6 @@ export const typeDefs = `
 `;
 
 export default makeExecutableSchema({
-    typeDefs: [typeDefs],
-    resolvers: resolvers
+  typeDefs: [typeDefs],
+  resolvers: resolvers,
 });
