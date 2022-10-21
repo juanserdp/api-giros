@@ -5,7 +5,7 @@ export default function autenticarCredenciales(usuario, numeroDocumento, clave, 
         return { error: "Usuario o contraseña incorrectos" };
     }
     else if (!bycript.compareSync(clave, usuario[0].clave)){
-        callback("El numero de documento coincide pero la clave es incorrecta");
+        callback("El numero de documento coincide pero la clave es incorrecta: ", clave);
         return { error: "Usuario o contraseña incorrectos" };
     }
     else if (usuario[0].estado !== "ACTIVO"){
