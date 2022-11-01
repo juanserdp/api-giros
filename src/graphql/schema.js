@@ -18,8 +18,8 @@ export const typeDefs = `
         obtenerGirosPorIdUsuario(id: ID!): [Giro]!
         obtenerGirosPorUsuariosPorIdAsesor(id: ID!): [Giro]!
 
-        """ CONFIGURACION """
-        obtenerConfiguraciones: [Configuracion]!
+        """ MENSAJES """
+        obtenerMensajes: [Mensaje]!
     }
 
     type Mutation{
@@ -48,8 +48,6 @@ export const typeDefs = `
             numeroDocumento: String!,
             valorRecarga: Float!
             ): Usuario!
-
-
 
         """ ASESORES """
         crearAsesor( 
@@ -91,21 +89,16 @@ export const typeDefs = `
             giro: GiroForUpdateInput!
             ): Giro!
         eliminarGiro(id: ID!): Giro!
-        crearComprobantePago(id: ID!): Giro!
-        editarComprobantePago(id: ID!): Giro!
 
-
-        """ CONFIGURACION """
-        crearConfiguracion(
-            asesor: ID!,
-            buzon: [String!],
-            valorMinimoGiro: Float!,
-            valorMinimoRecarga: Float!
-        ): Configuracion!
-        editarConfiguracion(
-            asesor: ID!,
-            configuracion: ConfiguracionForUpdateInput!
-        ): Configuracion!
+        """ MENSAJES """
+        crearMensaje(
+            mensaje: String!
+        ): Mensaje!
+        editarMensaje(
+            id: ID!,
+            mensaje: MensajeForUpdateInput!
+        ): Mensaje!
+        eliminarMensaje(id: ID!): Mensaje!
     }
 
     """ INTERFACES """
@@ -166,9 +159,14 @@ export const typeDefs = `
         token: String,
         error: String
     }
-    type Configuracion{
-        valorMinimoGiro: Float
+
+    type Mensaje{
+        id: ID,
+        mensaje: String,
+        fechaCreacion: String,
+        fechaUltimaModificacion: String
     }
+
 
     """ INPUTS """
     input AsesorForUpdateInput{
@@ -207,9 +205,10 @@ export const typeDefs = `
         tasaCompra: Float,
         estadoGiro: String
     }
-    input ConfiguracionForUpdateInput{
-        valorMinimoGiro: Float,
+    input MensajeForUpdateInput{
+        mensaje: String
     }
+
 `;
 
 export default makeExecutableSchema({

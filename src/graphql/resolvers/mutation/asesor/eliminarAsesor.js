@@ -1,6 +1,5 @@
 import AuthorizationError from "../../../../errors/AuthorizationError";
 import Asesor from "../../../../models/Asesor";
-import { eliminarConfiguracion } from "../configuracion/eliminarConfiguracion";
 
 export const eliminarAsesor = async (_root, { id }, context) => {
     if (context.autorizacion &&

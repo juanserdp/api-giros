@@ -18,53 +18,83 @@ import { eliminarAsesor } from "./mutation/asesor/eliminarAsesor";
 import { obtenerAsesores } from "./query/asesor/obtenerAsesores";
 import { obtenerAsesorPorId } from "./query/asesor/obtenerAsesorPorId";
 
-import { crearComprobantePago } from "./mutation/giro/comprobante_pago/crearComprobantePago";
-import { editarComprobantePago } from "./mutation/giro/comprobante_pago/editarComprobantePago";
-
 import { recargarAsesor } from "./mutation/asesor/recargarAsesor";
 import { recargarUsuario } from "./mutation/usuario/recargarUsuario";
 
-import { crearConfiguracion } from "./mutation/configuracion/crearConfiguracion";
-import { editarConfiguracion } from "./mutation/configuracion/editarConfiguracion";
-import { obtenerConfiguraciones } from "./query/configuracion/obtenerConfiguraciones";
 import { obtenerGirosPorUsuariosPorIdAsesor } from "./query/giro/obtenerGirosPorUsuariosPorIdAsesor";
 
+import { obtenerMensajes } from "./query/mensaje/obtenerMensajes";
+import { crearMensaje } from "./mutation/mensaje/crearMensaje";
+import { editarMensaje } from "./mutation/mensaje/editarMensaje";
+import { eliminarMensaje } from "./mutation/mensaje/eliminarMensaje";
+
 export const resolvers = {
-    Query:{},
-    Mutation:{}
+    Query: {
+        obtenerUsuarios,
+        obtenerUsuarioPorId,
+        obtenerUsuariosPorIdAsesor,
+        obtenerGiros,
+        obtenerGiroPorId,
+        obtenerGirosPorIdUsuario,
+        obtenerGirosPorUsuariosPorIdAsesor,
+        obtenerAsesores,
+        obtenerAsesorPorId,
+        obtenerMensajes
+    },
+    Mutation: {
+        login,
+        crearUsuario,
+        editarUsuario,
+        eliminarUsuario,
+        crearGiro,
+        editarGiro,
+        eliminarGiro,
+        crearAsesor,
+        editarAsesor,
+        eliminarAsesor,
+        recargarAsesor,
+        recargarUsuario,
+        crearMensaje,
+        editarMensaje,
+        eliminarMensaje
+    }
 };
 
-resolvers.Query.obtenerUsuarios = obtenerUsuarios;
-resolvers.Query.obtenerUsuarioPorId = obtenerUsuarioPorId;
-resolvers.Query.obtenerUsuariosPorIdAsesor = obtenerUsuariosPorIdAsesor;
+// Queries
 
-resolvers.Query.obtenerGiros = obtenerGiros;
-resolvers.Query.obtenerGiroPorId = obtenerGiroPorId;
-resolvers.Query.obtenerGirosPorIdUsuario = obtenerGirosPorIdUsuario;
-resolvers.Query.obtenerGirosPorUsuariosPorIdAsesor = obtenerGirosPorUsuariosPorIdAsesor;
+//resolvers.Query.obtenerUsuarios = obtenerUsuarios;
+// resolvers.Query.obtenerUsuarioPorId = obtenerUsuarioPorId;
+// resolvers.Query.obtenerUsuariosPorIdAsesor = obtenerUsuariosPorIdAsesor;
 
-resolvers.Query.obtenerAsesores = obtenerAsesores;
-resolvers.Query.obtenerAsesorPorId = obtenerAsesorPorId;
+// resolvers.Query.obtenerGiros = obtenerGiros;
+// resolvers.Query.obtenerGiroPorId = obtenerGiroPorId;
+// resolvers.Query.obtenerGirosPorIdUsuario = obtenerGirosPorIdUsuario;
+// resolvers.Query.obtenerGirosPorUsuariosPorIdAsesor = obtenerGirosPorUsuariosPorIdAsesor;
 
-resolvers.Mutation.login = login;
-resolvers.Mutation.crearUsuario = crearUsuario;
-resolvers.Mutation.editarUsuario = editarUsuario;
-resolvers.Mutation.eliminarUsuario = eliminarUsuario;
+// resolvers.Query.obtenerAsesores = obtenerAsesores;
+// resolvers.Query.obtenerAsesorPorId = obtenerAsesorPorId;
 
-resolvers.Mutation.crearGiro = crearGiro;
-resolvers.Mutation.editarGiro = editarGiro;
-resolvers.Mutation.eliminarGiro = eliminarGiro;
+// resolvers.Query.obtenerMensajes = obtenerMensajes;
 
-resolvers.Mutation.crearComprobantePago = crearComprobantePago;
-resolvers.Mutation.editarComprobantePago = editarComprobantePago;
+// Mutations
 
-resolvers.Mutation.crearAsesor = crearAsesor;
-resolvers.Mutation.editarAsesor = editarAsesor;
-resolvers.Mutation.eliminarAsesor = eliminarAsesor;
+// resolvers.Mutation.login = login;
+// resolvers.Mutation.crearUsuario = crearUsuario;
+// resolvers.Mutation.editarUsuario = editarUsuario;
+// resolvers.Mutation.eliminarUsuario = eliminarUsuario;
 
-resolvers.Mutation.recargarAsesor = recargarAsesor;
-resolvers.Mutation.recargarUsuario = recargarUsuario;
+// resolvers.Mutation.crearGiro = crearGiro;
+// resolvers.Mutation.editarGiro = editarGiro;
+// resolvers.Mutation.eliminarGiro = eliminarGiro;
 
-resolvers.Mutation.crearConfiguracion = crearConfiguracion;
-resolvers.Mutation.editarConfiguracion = editarConfiguracion;
-resolvers.Query.obtenerConfiguraciones = obtenerConfiguraciones;
+// resolvers.Mutation.crearAsesor = crearAsesor;
+// resolvers.Mutation.editarAsesor = editarAsesor;
+// resolvers.Mutation.eliminarAsesor = eliminarAsesor;
+
+// resolvers.Mutation.recargarAsesor = recargarAsesor;
+// resolvers.Mutation.recargarUsuario = recargarUsuario;
+
+
+// resolvers.Mutation.crearMensaje = crearMensaje;
+// resolvers.Mutation.editarMensaje = editarMensaje;
+// resolvers.Mutation.eliminarMensaje = eliminarMensaje;
