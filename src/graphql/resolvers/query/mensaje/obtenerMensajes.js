@@ -4,6 +4,7 @@ import Mensaje from "../../../../models/Mensaje";
 
 export const obtenerMensajes = async (_root, _args, context) => {
     if (context.autorizacion &&
+        context.rol === "ADMINISTRADOR" ||
         context.rol === "ASESOR" ||
         context.rol === "USUARIO" ||
         context.rol === "OPERARIO") {
