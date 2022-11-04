@@ -2,6 +2,7 @@ import Usuario from "../../../../models/Usuario";
 import bycript from "bcrypt";
 import { handleResponse } from "../../../../helpers/handleResponse";
 import DuplicationError from "../../../../errors/DuplicationError";
+import { validarClave } from "../../../../helpers/validarClave";
 
 const saltRounds = 12;
 const salt = bycript.genSaltSync(saltRounds);
@@ -13,6 +14,12 @@ export const editarUsuario = async (_root, { id, usuario }, context) => {
             context.rol === "ADMINISTRADOR")) {
         try {
             const { numeroDocumento, clave } = usuario;
+            if (clave) {
+                validarClave(clave, (errores, clave) => {
+                    if (errores) throw new Error(errores.toString());
+                    else if (clave) console.log("La clave es segura!");
+                });
+            };
             if (clave) usuario.clave = bycript.hashSync(clave, salt);
             if (numeroDocumento) {
                 const usuario = await Usuario.find(

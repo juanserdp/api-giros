@@ -3,6 +3,7 @@ import bycript from "bcrypt";
 import AuthorizationError from "../../../../errors/AuthorizationError";
 import { handleResponse } from "../../../../helpers/handleResponse";
 import DuplicationError from "../../../../errors/DuplicationError";
+import { validarClave } from "../../../../helpers/validarClave";
 const saltRounds = 12;
 const salt = bycript.genSaltSync(saltRounds);
 export const crearAsesor = async (_root, {
@@ -16,6 +17,10 @@ export const crearAsesor = async (_root, {
     if (context.autorizacion &&
         (context.rol === "ADMINISTRADOR")) {
         try {
+            validarClave(clave, (errores, clave) => {
+                if (errores) throw new Error(errores.toString());
+                else if (clave) console.log("La clave es segura!");
+            });
             const noExisteAsesor = (await Asesor.find(
                 { numeroDocumento },
                 (error, data) => handleResponse(error, data, "Crear Asesor"))

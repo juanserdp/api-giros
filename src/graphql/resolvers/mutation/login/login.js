@@ -28,7 +28,7 @@ export const login = async (_, { numeroDocumento, clave }, context) => {
 
             if (!resultAut) return { token: await generarJwt(asesor[0].id, asesor[0].estado, "ASESOR") };
         }
-        if (resultAut) return resultAut.error;
+        if (resultAut) return resultAut;
         else return { error: "Usuario o contraseña incorrectos" };
     } catch (error) {
         throw new Error(error);

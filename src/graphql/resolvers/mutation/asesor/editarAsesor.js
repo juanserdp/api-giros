@@ -3,6 +3,7 @@ import bycript from "bcrypt";
 import { handleResponse } from "../../../../helpers/handleResponse";
 import AuthorizationError from "../../../../errors/AuthorizationError";
 import DuplicationError from "../../../../errors/DuplicationError";
+import { validarClave } from "../../../../helpers/validarClave";
 
 const saltRounds = 12;
 const salt = bycript.genSaltSync(saltRounds);
@@ -13,13 +14,19 @@ export const editarAsesor = async (_root, { id, asesor }, context) => {
             context.rol === "ASESOR")) {
         try {
             const { numeroDocumento, clave } = asesor;
+            if (clave) {
+                validarClave(clave, (errores, clave) => {
+                    if (errores) throw new Error(errores.toString());
+                    else if (clave) console.log("La clave es segura!");
+                });
+            };
             if (clave) asesor.clave = bycript.hashSync(clave, salt);
             if (numeroDocumento) {
                 const asesor = await Asesor.find(
                     { numeroDocumento },
                     (error, data) => handleResponse(error, data, "Editar Asesor"))
                     .clone();
-                if(asesor.length > 0) throw new DuplicationError("Ya existe un asesor con ese numero de documento!");
+                if (asesor.length > 0) throw new DuplicationError("Ya existe un asesor con ese numero de documento!");
             };
             const asesorEditado = await Asesor.findByIdAndUpdate(
                 id,

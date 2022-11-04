@@ -16,7 +16,8 @@ export const editarGiro = async (_root, {
             if (giroData) {
                 const { estadoGiro } = giroData;
                 if (estadoGiro === "PENDIENTE" ||
-                    (estadoGiro === "EN PROCESO" && (context.rol === "ADMINISTRADOR" || context.rol === "OPERARIO"))) {
+                    (estadoGiro === "EN PROCESO" && (context.rol === "ADMINISTRADOR" || context.rol === "ASESOR" || context.rol === "OPERARIO")) ||
+                    (estadoGiro === "COMPLETADO" && (context.rol === "ADMINISTRADOR"))) {
                     const giroModificado = await Giro.findByIdAndUpdate(
                         id,
                         giro,

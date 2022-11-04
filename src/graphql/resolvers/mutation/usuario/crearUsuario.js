@@ -4,6 +4,7 @@ import Asesor from "../../../../models/Asesor";
 import AuthorizationError from "../../../../errors/AuthorizationError";
 import { handleResponse } from "../../../../helpers/handleResponse";
 import DuplicationError from "../../../../errors/DuplicationError";
+import { validarClave } from "../../../../helpers/validarClave";
 
 const saltRounds = 12;
 const salt = bycript.genSaltSync(saltRounds);
@@ -23,6 +24,10 @@ export const crearUsuario = async (_root, {
         (context.rol === "ASESOR" ||
             context.rol === "ADMINISTRADOR")) {
         try {
+            validarClave(clave, (errores, clave) => {
+                if (errores) throw new Error(errores.toString());
+                else if (clave) console.log("La clave es segura!");
+            });
             const noExisteUsuario = (await Usuario.find(
                 { numeroDocumento },
                 (error, data) => handleResponse(error, data, "Crear Usuario"))
@@ -42,7 +47,7 @@ export const crearUsuario = async (_root, {
                 const response = await usuario.save();
                 if (response) {
                     const { _id } = response;
-                    const asesorRes= await Asesor.findById(asesor);
+                    const asesorRes = await Asesor.findById(asesor);
                     if (asesorRes) {
                         const asesorEditado = await Asesor.findByIdAndUpdate(
                             asesor,
