@@ -36,7 +36,7 @@ export const typeDefs = `
             clave: String!,
             saldo: Float!,
             capacidadPrestamo: Float!,
-            tasaVenta: Float!
+            #tasaVenta: Float!
             ): Usuario!
         editarUsuario(
             id: ID!,
@@ -124,7 +124,8 @@ export const typeDefs = `
         capacidadPrestamo: Float,
         giros: [Giro],
         estado: String,
-        tasaVenta: Float
+        tasaVenta: Float,
+        usarTasaDelAsesor: Boolean
     }
     type Giro implements DatosPersonales{
         id: ID,
@@ -190,7 +191,8 @@ export const typeDefs = `
         deuda: Float,
         capacidadPrestamo: Float,
         estado: String,
-        tasaVenta: Float
+        tasaVenta: Float,
+        usarTasaDelAsesor: Boolean
     }
     input GiroForUpdateInput{
         nombres: String,
@@ -212,6 +214,6 @@ export const typeDefs = `
 `;
 
 export default makeExecutableSchema({
-  typeDefs: [typeDefs],
-  resolvers: resolvers,
+    typeDefs: [typeDefs],
+    resolvers: resolvers,
 });

@@ -42,7 +42,8 @@ export const crearUsuario = async (_root, {
                     clave: bycript.hashSync(clave, salt),
                     saldo,
                     capacidadPrestamo,
-                    tasaVenta
+                    tasaVenta,
+                    usarTasaDelAsesor: true
                 });
                 const response = await usuario.save();
                 if (response) {

@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const UsuarioSchema = new Schema({
-    asesor:{
+    asesor: {
         type: Schema.Types.ObjectId,
         ref: 'Asesor',
         required: true
@@ -40,19 +40,24 @@ const UsuarioSchema = new Schema({
         required: true // CREAR UN USUARIO - ES OBLIGATORIO - CAPACIDAD DE PRESTAMO
     },
     giros: [{
-            type: Schema.Types.ObjectId,
-            ref: "Giro",
-            required: true
-        }],
+        type: Schema.Types.ObjectId,
+        ref: "Giro",
+        required: true
+    }],
     estado: {
         type: String,
         required: false,
-        enum:['ACTIVO','INACTIVO'],
+        enum: ['ACTIVO', 'INACTIVO'],
         default: 'ACTIVO' // CREAR UN USUARIO - POR DEFECTO - ESTADO = "ACTIVO"
     },
     tasaVenta: {
         type: Number,
         required: true //  CREAR UN USUARIO - ES OBLIGATORIO - TASA DE VENTA
+    },
+    usarTasaDelAsesor: {
+        type: Boolean,
+        required: true,
+        default: true
     }
 }, { collection: "Usuarios" });
 
