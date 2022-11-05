@@ -36,7 +36,7 @@ export const typeDefs = `
             clave: String!,
             saldo: Float!,
             capacidadPrestamo: Float!,
-            #tasaVenta: Float!
+            tasaVenta: Float!
             ): Usuario!
         editarUsuario(
             id: ID!,
