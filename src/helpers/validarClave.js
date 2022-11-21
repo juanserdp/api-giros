@@ -1,16 +1,16 @@
+export const seguridad = {
+    longitud: 8,
+    cantidadLetras: 1,
+    cantidadMayusculas: 1,
+    cantidadNumeros: 1
+};
 
 export function validarClave(clave = "", response) {
-    const seguridad = {
-        longitud: 8,
-        cantidadLetras: 1,
-        cantidadMayusculas: 1,
-        cantidadNumeros: 1
-    };
     const error = {
-        longitud: ` La clave debe contener al menos ${seguridad.longitud} caracteres`,
-        cantidadLetras: ` La clave debe contener al menos ${seguridad.cantidadLetras} letra`,
-        cantidadMayusculas: ` La clave debe contener al menos ${seguridad.cantidadMayusculas} mayuscula`,
-        cantidadNumeros: ` La clave debe contener al menos ${seguridad.cantidadNumeros} numero`
+        longitud: `La clave debe contener al menos ${seguridad.longitud} caracteres`,
+        cantidadLetras: `La clave debe contener al menos ${seguridad.cantidadLetras} letra`,
+        cantidadMayusculas: `La clave debe contener al menos ${seguridad.cantidadMayusculas} mayuscula`,
+        cantidadNumeros: `La clave debe contener al menos ${seguridad.cantidadNumeros} numero`
     };
     const propiedades = {
         longitud: 0,

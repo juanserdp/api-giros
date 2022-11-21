@@ -39,12 +39,22 @@ const AsesorSchema = new Schema({
     tasaVenta: {
         type: Number,
         required: false, // CREAR ASESOR - POR DEFECTO - TASA VENTA = 0
-        default: 0
+        default: 1
     },
     valorMinimoGiro: {
         type: Number,
-        required: true,
+        required: false,
         default: 1
+    },
+    tasaPreferencial: {
+        type: Number,
+        required: false,
+        default: 1 
+    },
+    usarTasaPreferencial: {
+        type: Boolean,
+        required: false,
+        default: false
     }
 }, { collection: "Asesores" });
 

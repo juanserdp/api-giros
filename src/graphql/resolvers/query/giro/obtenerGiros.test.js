@@ -29,7 +29,6 @@ const OBTENER_GIROS = `
                 valorGiro,
                 comprobantePago,
                 fechaEnvio,
-                tasaCompra,
                 estadoGiro
         }
     }
@@ -50,7 +49,7 @@ describe("POST Request", () => {
                 assert.graphQL(res.body);
                 done();
             });
-    }, 30000);
+    });
     it("Obtiene los giros como administrador (+token)", (done) => {
         request
             .post("/")
@@ -77,5 +76,5 @@ describe("POST Request", () => {
                 assert.graphQL(res.body);
                 done();
             });
-    }, 30000);
+    });
 });

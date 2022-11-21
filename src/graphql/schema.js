@@ -35,8 +35,7 @@ export const typeDefs = `
             numeroDocumento: String!,
             clave: String!,
             saldo: Float!,
-            capacidadPrestamo: Float!,
-            tasaVenta: Float!
+            capacidadPrestamo: Float!
             ): Usuario!
         editarUsuario(
             id: ID!,
@@ -81,8 +80,7 @@ export const typeDefs = `
             banco: String!,
             tipoCuenta: String!,
             numeroCuenta: String!,
-            valorGiro: Float!,
-            tasaCompra: Float!
+            valorGiro: Float!
             ): Giro!
         editarGiro(
             id: ID!,
@@ -92,7 +90,8 @@ export const typeDefs = `
 
         """ MENSAJES """
         crearMensaje(
-            mensaje: String!
+            mensaje: String,
+            imagen: String
         ): Mensaje!
         editarMensaje(
             id: ID!,
@@ -124,8 +123,8 @@ export const typeDefs = `
         capacidadPrestamo: Float,
         giros: [Giro],
         estado: String,
-        tasaVenta: Float,
-        usarTasaDelAsesor: Boolean
+        tasaPreferencial: Float,
+        usarTasaPreferencial: Boolean
     }
     type Giro implements DatosPersonales{
         id: ID,
@@ -140,7 +139,7 @@ export const typeDefs = `
         valorGiro: Float,
         comprobantePago: String,
         fechaEnvio: String,
-        tasaCompra: Float,
+        #tasaCompra: Float,
         estadoGiro: String
     }
     type Asesor implements DatosPersonales{
@@ -154,7 +153,9 @@ export const typeDefs = `
         usuarios: [Usuario],
         estado: String,
         tasaVenta: Float,
-        valorMinimoGiro: Float
+        valorMinimoGiro: Float,
+        tasaPreferencial: Float,
+        usarTasaPreferencial: Boolean
     }
     type Token{
         token: String,
@@ -164,6 +165,7 @@ export const typeDefs = `
     type Mensaje{
         id: ID,
         mensaje: String,
+        imagen: String,
         fechaCreacion: String,
         fechaUltimaModificacion: String
     }
@@ -179,7 +181,9 @@ export const typeDefs = `
         saldo: Float,
         estado: String,
         tasaVenta: Float,
-        valorMinimoGiro: Float
+        valorMinimoGiro: Float,
+        tasaPreferencial: Float,
+        usarTasaPreferencial: Boolean
     }
     input UsuarioForUpdateInput{
         nombres: String,
@@ -191,8 +195,8 @@ export const typeDefs = `
         deuda: Float,
         capacidadPrestamo: Float,
         estado: String,
-        tasaVenta: Float,
-        usarTasaDelAsesor: Boolean
+        tasaPreferencial: Float,
+        usarTasaPreferencial: Boolean
     }
     input GiroForUpdateInput{
         nombres: String,
@@ -204,11 +208,12 @@ export const typeDefs = `
         numeroCuenta: String,
         valorGiro: Float,
         comprobantePago: String,
-        tasaCompra: Float,
+        #tasaCompra: Float,
         estadoGiro: String
     }
     input MensajeForUpdateInput{
-        mensaje: String
+        mensaje: String,
+        imagen: String
     }
 
 `;

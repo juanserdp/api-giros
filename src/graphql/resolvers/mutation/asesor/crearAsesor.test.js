@@ -2,6 +2,7 @@ import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
 import { iniciarSesionComoAdmin } from "../../../../constants/login";
 import { v4 as uuidv4 } from 'uuid';
+import { asesorCamposGql } from "../../../../constants/camposGraphql";
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
 
@@ -10,6 +11,8 @@ const baseURL = "http://localhost:4000/graphql";
 const request = supertest(baseURL);
 const expect = chai.expect;
 let tokenAdmin = "";
+
+
 const CREAR_ASESOR = `
     mutation CrearAsesor(
         $nombres: String!
@@ -27,28 +30,17 @@ const CREAR_ASESOR = `
             clave: $clave,
             saldo: $saldo,
             ){
-                id
-                nombres
-                apellidos
-                tipoDocumento
-                numeroDocumento
-                clave
-                saldo
-                usuarios{
-                    id
-                }
-                estado
-                tasaVenta
+                ${asesorCamposGql}
             }
         }
 `;
 const numeroDocumento = uuidv4();
-const camposIngresados = {
+const datosCrearAsesor = {
     nombres: "Andres",
     apellidos: "Arias",
     tipoDocumento: "Cedula",
     numeroDocumento: numeroDocumento,
-    clave: "12345",
+    clave: "Colombia12345",
     saldo: 100500
 };
 const camposEsperados = {
@@ -56,14 +48,17 @@ const camposEsperados = {
     apellidos: "Arias",
     tipoDocumento: "Cedula",
     numeroDocumento: numeroDocumento,
-    clave: "12345",
+    clave: "Colombia12345",
     saldo: 100500,
     usuarios: [],
     estado: "ACTIVO",
-    tasaVenta: 0
+    tasaVenta: 1,
+    valorMinimoGiro: 1,
+    tasaPreferencial: 1,
+    usarTasaPreferencial: false
 };
 describe("POST: Crear Asesor", () => {
-    it("Inicia sesion como administrador", (done) => {
+    it("Iniciar sesion como administrador antecede a crear un Asesor", (done) => {
         request
             .post("/")
             .send({
@@ -78,13 +73,13 @@ describe("POST: Crear Asesor", () => {
                 tokenAdmin = res.body.data.login.token;
                 done();
             });
-    }, 30000);
+    });
     it("Crear un asesor como administrador", (done) => {
         request
             .post("/")
             .send({
                 query: CREAR_ASESOR,
-                variables: camposIngresados
+                variables: datosCrearAsesor
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
@@ -101,14 +96,14 @@ describe("POST: Crear Asesor", () => {
                 expect(asesor).to.be.a("object");
                 expect(asesor.usuarios).to.have.lengthOf(0);
 
-                for(const prop in camposEsperados){
+                for (const prop in camposEsperados) {
                     expect(asesor).to.have.property(prop);
-                    if(prop == 'clave'){
+                    if (prop == 'clave') {
                         expect(asesor[prop]).to.be.a("string");
                         expect(asesor[prop]).to.have.lengthOf(60);
                         continue;
                     };
-                    if(prop == 'usuarios'){
+                    if (prop == 'usuarios') {
                         expect(asesor[prop]).to.be.a("array");
                         expect(asesor[prop]).to.have.lengthOf(0);
                         continue;
@@ -117,20 +112,13 @@ describe("POST: Crear Asesor", () => {
                 };
                 done();
             });
-    }, 30000);
-    it("Obtener un error si el numero de documento se repite", (done)=>{
+    });
+    it("Obtener un error si el numero de documento se repite", (done) => {
         request
             .post("/")
             .send({
                 query: CREAR_ASESOR,
-                variables: {
-                    nombres: "Andres",
-                    apellidos: "Arias",
-                    tipoDocumento: "Cedula",
-                    numeroDocumento: "1111111132",
-                    clave: "12345",
-                    saldo: 100500
-                }
+                variables: datosCrearAsesor
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
@@ -149,5 +137,5 @@ describe("POST: Crear Asesor", () => {
                 expect(message).to.equal("Error: El asesor ya existe!");
                 done();
             });
-    }, 30000)
+    })
 });

@@ -2,16 +2,10 @@ import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
 import { iniciarSesionComoAdmin } from "../../../../constants/login";
 import { v4 as uuidv4 } from 'uuid';
+import { asesorCamposGql } from "../../../../constants/camposGraphql";
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
-
-const { assert } = chai;
-const baseURL = "http://localhost:4000/graphql";
-const request = supertest(baseURL);
-const expect = chai.expect;
-let tokenAdmin = "";
-
-function revisarCamposEspecificos(error, res, done, campos) {
+function revisarCamposEspecificos(error, res, done, campos, assert) {
     if (error) return done(error);
     assert.graphQL(res.body);
 
@@ -36,7 +30,15 @@ function revisarCamposEspecificos(error, res, done, campos) {
         expect(asesor[prop]).to.equal(campos[prop]);
     };
     done();
-}
+};
+const { assert } = chai;
+const baseURL = "http://localhost:4000/graphql";
+const request = supertest(baseURL);
+const expect = chai.expect;
+let tokenAdmin = "";
+
+const numeroDocumento = uuidv4();
+
 const CREAR_ASESOR = `
     mutation CrearAsesor(
         $nombres: String!
@@ -54,41 +56,11 @@ const CREAR_ASESOR = `
             clave: $clave,
             saldo: $saldo,
             ){
-                id
-                nombres
-                apellidos
-                tipoDocumento
-                numeroDocumento
-                clave
-                saldo
-                usuarios{
-                    id
-                }
-                estado
-                tasaVenta
+                ${asesorCamposGql}
             }
         }
 `;
-const numeroDocumento = uuidv4();
-const camposIngresadosCrearAsesor = {
-    nombres: "AndresRA",
-    apellidos: "AriasRA",
-    tipoDocumento: "Cedula",
-    numeroDocumento: numeroDocumento,
-    clave: "12345",
-    saldo: 100500
-};
-const camposEsperadosCrearAsesor = {
-    nombres: "AndresRA",
-    apellidos: "AriasRA",
-    tipoDocumento: "Cedula",
-    numeroDocumento: numeroDocumento,
-    clave: "12345",
-    saldo: 100500,
-    usuarios: [],
-    estado: "ACTIVO",
-    tasaVenta: 0
-};
+
 const EDITAR_ASESOR = `
 mutation RecargarAsesor(
     $numeroDocumento: String!,
@@ -98,17 +70,40 @@ mutation RecargarAsesor(
         numeroDocumento: $numeroDocumento,
         valorRecarga: $valorRecarga
         ){
-        saldo
+            ${asesorCamposGql}
     }
 }
 `;
-const camposParaRecargarAsesor = {
+
+const datosCrearAsesor = {
+    nombres: "Andres",
+    apellidos: "Arias",
+    tipoDocumento: "Cedula",
+    numeroDocumento: numeroDocumento,
+    clave: "Colombia12345",
+    saldo: 100500
+};
+
+const datosRecargarAsesor = {
     numeroDocumento: numeroDocumento,
     valorRecarga: 20000
 };
-const camposEsperadosDeRecargarAsesor = {
-    saldo: 120500
+
+const camposEsperados = {
+    nombres: "Andres",
+    apellidos: "Arias",
+    tipoDocumento: "Cedula",
+    numeroDocumento: numeroDocumento,
+    clave: "Colombia12345",
+    saldo: 120500,
+    usuarios: [],
+    estado: "ACTIVO",
+    tasaVenta: 1,
+    valorMinimoGiro: 1,
+    tasaPreferencial: 1,
+    usarTasaPreferencial: false
 };
+
 describe("POST: Recargar Asesor", () => {
     it("Inicia sesion como administrador", (done) => {
         request
@@ -125,31 +120,31 @@ describe("POST: Recargar Asesor", () => {
                 tokenAdmin = res.body.data.login.token;
                 done();
             });
-    }, 30000);
+    });
     it(`Crear un asesor como administrador`, (done) => {
         request
             .post("/")
             .send({
                 query: CREAR_ASESOR,
-                variables: camposIngresadosCrearAsesor
+                variables: datosCrearAsesor
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
             .auth(tokenAdmin, { type: 'bearer' })
             .expect(200)
-            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperadosCrearAsesor));
-    }, 30000);
+            .end((error, res) => revisarCamposEspecificos(error, res, done, datosCrearAsesor, assert));
+    });
     it("Recargar el asesor como administrador", (done) => {
         request
             .post("/")
             .send({
                 query: EDITAR_ASESOR,
-                variables: camposParaRecargarAsesor
+                variables: datosRecargarAsesor
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
             .auth(tokenAdmin, { type: 'bearer' })
             .expect(200)
-            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperadosDeRecargarAsesor));
-    }, 30000);
+            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperados, assert));
+    });
 });

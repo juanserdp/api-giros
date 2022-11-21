@@ -14,7 +14,7 @@ export const crearGiro = async (_root,
         tipoCuenta,
         numeroCuenta,
         valorGiro,
-        tasaCompra
+        // tasaCompra
     }, context) => {
     if (context.autorizacion &&
         (context.rol === "USUARIO" ||
@@ -31,8 +31,7 @@ export const crearGiro = async (_root,
                 tipoCuenta,
                 numeroCuenta,
                 valorGiro,
-                fechaEnvio: (new Date()).toLocaleDateString(),
-                tasaCompra,
+                fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
                 estadoGiro: "PENDIENTE"
             });
             const usuarioInfo = await Usuario.findById(
@@ -53,11 +52,11 @@ export const crearGiro = async (_root,
                         const update = transferencia.obtenerCuentas();
                         const usuarioModificado = await Usuario.findByIdAndUpdate(
                             usuario,
-                            {...update, giros: [...giros, _id]},
+                            { ...update, giros: [...giros, _id] },
                             { new: true },
                             (error, data) => handleResponse(error, data, "Crear Giro"))
                             .clone();
-                        if(usuarioModificado) return response;
+                        if (usuarioModificado) return response;
                         else throw new Error("No se pudo modificar el usuario para agregar el giro!");
                     }
                     else throw new Error("No se pudo enviar el giro!");

@@ -29,7 +29,6 @@ const OBTENER_GIROS_ID_USUARIO = `
                 valorGiro,
                 comprobantePago,
                 fechaEnvio,
-                tasaCompra,
                 estadoGiro
         }
     }
@@ -50,7 +49,7 @@ describe("POST Request", () => {
                 assert.graphQL(res.body);
                 done();
             });
-    }, 30000);
+    });
     it("Obtiener los giros por usuario", (done) => {
         request
             .post("/")
@@ -80,5 +79,5 @@ describe("POST Request", () => {
                 assert.graphQL(res.body);
                 done();
             });
-    }, 30000);
+    });
 });

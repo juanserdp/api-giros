@@ -1,5 +1,6 @@
 import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
+import { usuarioCamposGql } from "../../../../constants/camposGraphql";
 import { iniciarSesionComoAdmin } from "../../../../constants/login";
 import { Asesor as asesorSchema } from "../../../../models/Asesor";
 import { Usuario as usuarioSchema } from "../../../../models/Usuario";
@@ -11,7 +12,9 @@ const { assert } = chai;
 const baseURL = "http://localhost:4000/graphql";
 const request = supertest(baseURL);
 const expect = chai.expect;
+
 let tokenAdmin = "";
+
 const OBTENER_ASESORES = `
 query{
     asesores: obtenerAsesores{
@@ -22,6 +25,11 @@ query{
         numeroDocumento
         clave
         saldo
+        estado
+        tasaVenta
+        valorMinimoGiro
+        tasaPreferencial
+        usarTasaPreferencial
         usuarios{
             id
             nombres
@@ -33,10 +41,10 @@ query{
             deuda
             capacidadPrestamo
             estado
-            tasaVenta
+            tasaPreferencial
+            usarTasaPreferencial
         }
-        estado
-        tasaVenta
+        
     }
 }`;
 
@@ -56,7 +64,7 @@ describe("POST: Obtener Asesores", () => {
                 tokenAdmin = res.body.data.login.token;
                 done();
             });
-    }, 30000);
+    });
     it("Obtener asesores como administrador", (done) => {
         request
             .post("/")
@@ -101,6 +109,5 @@ describe("POST: Obtener Asesores", () => {
                 };
                 done();
             });
-    }, 30000);
-
+    });
 });

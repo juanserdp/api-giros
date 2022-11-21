@@ -50,14 +50,15 @@ const UsuarioSchema = new Schema({
         enum: ['ACTIVO', 'INACTIVO'],
         default: 'ACTIVO' // CREAR UN USUARIO - POR DEFECTO - ESTADO = "ACTIVO"
     },
-    tasaVenta: {
+    tasaPreferencial: {
         type: Number,
-        required: true //  CREAR UN USUARIO - ES OBLIGATORIO - TASA DE VENTA
+        required: false,
+        default: 1 //  CREAR UN USUARIO - ES OBLIGATORIO - TASA DE VENTA
     },
-    usarTasaDelAsesor: {
+    usarTasaPreferencial: {
         type: Boolean,
-        required: true,
-        default: true
+        required: false,
+        default: false
     }
 }, { collection: "Usuarios" });
 

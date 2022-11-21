@@ -32,12 +32,7 @@ export const crearAsesor = async (_root, {
                     tipoDocumento,
                     numeroDocumento,
                     clave: bycript.hashSync(clave, salt),
-                    saldo,
-                    configuracion: {
-                        buzon: [],
-                        valorMinimoGiro: 1,
-                        valorMinimoRecarga: 1
-                    }
+                    saldo
                 });
                 const response = await asesor.save();
                 if (response) return response;

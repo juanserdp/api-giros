@@ -17,8 +17,7 @@ export const crearUsuario = async (_root, {
     numeroDocumento,
     clave,
     saldo,
-    capacidadPrestamo,
-    tasaVenta
+    capacidadPrestamo
 }, context) => {
     if (context.autorizacion &&
         (context.rol === "ASESOR" ||
@@ -41,9 +40,7 @@ export const crearUsuario = async (_root, {
                     numeroDocumento,
                     clave: bycript.hashSync(clave, salt),
                     saldo,
-                    capacidadPrestamo,
-                    tasaVenta,
-                    usarTasaDelAsesor: true
+                    capacidadPrestamo
                 });
                 const response = await usuario.save();
                 if (response) {

@@ -49,10 +49,10 @@ const GiroSchema = new Schema(
       type: String,
       required: true,
     },
-    tasaCompra: {
-      type: Number,
-      required: true,
-    },
+    // tasaCompra: {
+    //   type: Number,
+    //   required: true,
+    // },
     estadoGiro: {
       type: String,
       required: false,

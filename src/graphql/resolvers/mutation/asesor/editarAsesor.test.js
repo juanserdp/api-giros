@@ -2,14 +2,14 @@ import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
 import { iniciarSesionComoAdmin } from "../../../../constants/login";
 import { v4 as uuidv4 } from 'uuid';
+import { asesorCamposGql } from "../../../../constants/camposGraphql";
+
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
-
 const { assert } = chai;
 const baseURL = "http://localhost:4000/graphql";
 const request = supertest(baseURL);
 const expect = chai.expect;
-let tokenAdmin = "";
 
 function revisarCamposEspecificos(error, res, done, campos) {
     if (error) return done(error);
@@ -36,7 +36,36 @@ function revisarCamposEspecificos(error, res, done, campos) {
         expect(asesor[prop]).to.equal(campos[prop]);
     };
     done();
-}
+};
+
+let tokenAdmin = "";
+
+let idAsesor = "";
+
+const numeroDocumento = uuidv4();
+
+const CREAR_ASESOR = `
+    mutation CrearAsesor(
+        $nombres: String!
+        $apellidos: String!
+        $tipoDocumento: String!
+        $numeroDocumento: String!
+        $clave: String!
+        $saldo: Float!
+        ){
+        asesor: crearAsesor(
+            nombres: $nombres,
+            apellidos: $apellidos,
+            tipoDocumento: $tipoDocumento,
+            numeroDocumento: $numeroDocumento,
+            clave: $clave,
+            saldo: $saldo,
+            ){
+                ${asesorCamposGql}
+            }
+        }
+`;
+
 const EDITAR_ASESOR = `
     mutation EditarAsesor(
         $id: ID!
@@ -46,106 +75,53 @@ const EDITAR_ASESOR = `
             id: $id,
             asesor: $asesor
             ){
-                id
-                nombres
-                apellidos
-                tipoDocumento
-                numeroDocumento
-                clave
-                saldo
-                usuarios{
-                    id
-                }
-                estado
-                tasaVenta
+                ${asesorCamposGql}
             }
     }
 `;
-const numeroDocumento = uuidv4();
-let idAsesor = "6321698ff53c4bd357393ac5";
-const newNumeroDocumento = numeroDocumento;
-const camposEsperadosEditarAsesor = {
+
+const datosCrearAsesor = {
+    nombres: "Andres",
+    apellidos: "Arias",
+    tipoDocumento: "Cedula",
+    numeroDocumento: numeroDocumento,
+    clave: "Colombia12345",
+    saldo: 100500
+};
+
+const datosEditarAsesor = {
     nombres: "Juanse",
     apellidos: "Rodriguez",
     tipoDocumento: "CC",
-    numeroDocumento: "94328765032954",
-    clave: "12425",
-    saldo: 100200,
-    estado: "ACTIVO",
-    tasaVenta: 0.02
+    numeroDocumento: "12345678901234567890",
+    clave: "Colombia123456789",
+    saldo: 123456,
+    estado: "INACTIVO",
+    tasaVenta: 0.02,
+    valorMinimoGiro: 2,
+    tasaPreferencial: 2,
+    usarTasaPreferencial: true
 };
-const clave = newNumeroDocumento + "32465234/%($(/%"
-const EDITAR_ASESOR_DATOS_PERSONALES = `
-    mutation EditarAsesor(
-        $id: ID!
-        $asesor: AsesorForUpdateInput!
-    ){
-        asesor: editarAsesor(
-            id: $id,
-            asesor: $asesor
-            ){
-                id
-                nombres
-                apellidos
-                tipoDocumento
-                numeroDocumento
-            }
-    }
-`;
-const camposEsperadorDeEditarDatosPersonales = {
+
+const datosEditarDatosPersonalesAsesor = {
     nombres: "Sebitas",
-    apellidos: "Pci",
-    tipoDocumento: "TI",
-    numeroDocumento: newNumeroDocumento + "1231514786"
+    apellidos: "Rodriguez",
+    tipoDocumento: "Tarjeta de Identidad",
+    numeroDocumento: numeroDocumento + "012345"
 };
-const EDITAR_ASESOR_CLAVE = `
-    mutation EditarAsesor(
-        $id: ID!
-        $asesor: AsesorForUpdateInput!
-    ){
-        asesor: editarAsesor(
-            id: $id,
-            asesor: $asesor
-            ){
-                clave
-            }
-    }
-`;
-const camposEsperadosDeEditarClave = {
-    clave: "1234513"
+
+const datosEditarClaveAsesor = {
+    clave: "MExicooo1234"
 };
-const EDITAR_ASESOR_SALDO = `
-    mutation EditarAsesor(
-        $id: ID!
-        $asesor: AsesorForUpdateInput!
-    ){
-        asesor: editarAsesor(
-            id: $id,
-            asesor: $asesor
-            ){
-                saldo
-            }
-    }
-`;
-const camposEsperadosDeEditarSaldo = {
-    saldo: 1234513
+
+const datosEditarTasaVentaAsesor = {
+    tasaVenta: 650
 };
-const EDITAR_ASESOR_ESTADO = `
-    mutation EditarAsesor(
-        $id: ID!
-        $asesor: AsesorForUpdateInput!
-    ){
-        asesor: editarAsesor(
-            id: $id,
-            asesor: $asesor
-            ){
-                estado
-            }
-    }
-`;
-const camposEsperadosDeEditarEstado = {
-    estado: "ACTIVO"
+
+const datosEditarValorMinimoGiro = {
+    valorMinimoGiro: 6
 };
+
 describe("POST: Editar Asesor", () => {
     it("Inicia sesion como administrador", (done) => {
         request
@@ -162,66 +138,62 @@ describe("POST: Editar Asesor", () => {
                 tokenAdmin = res.body.data.login.token;
                 done();
             });
-    }, 30000);
-    const camposParaEditarDatosPersonales = {
-        id: idAsesor,
-        asesor: {
-            nombres: "Sebitas",
-            apellidos: "Pci",
-            tipoDocumento: "TI",
-            numeroDocumento: newNumeroDocumento + "1231514786"
-        }
-    };
-    const camposParaEditarClave = {
-        id: idAsesor,
-        asesor: {
-            clave: "1234513"
-        }
-    };
-    const camposParaEditarSaldo = {
-        id: idAsesor,
-        asesor: {
-            saldo: 1234513
-        }
-    };
-    const camposParaEditarEstado = {
-        id: idAsesor,
-        asesor: {
-            estado: "ACTIVO"
-        }
-    };
-    const camposParaEditarAsesor = {
-        id: idAsesor,
-        asesor: {
-            nombres: "Juanse",
-            apellidos: "Rodriguez",
-            tipoDocumento: "CC",
-            numeroDocumento: "94328765032954",
-            clave: "12425",
-            saldo: 100200,
-            estado: "ACTIVO",
-            tasaVenta: 0.02
-        }
-    };
-    it("Editar el asesor como administrador", (done) => {
+    });
+
+    it("Crear un asesor como administrador", (done) => {
         request
             .post("/")
             .send({
-                query: EDITAR_ASESOR,
-                variables: camposParaEditarAsesor
+                query: CREAR_ASESOR,
+                variables: datosCrearAsesor
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
             .auth(tokenAdmin, { type: 'bearer' })
             .expect(200)
-            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperadosEditarAsesor));
-    }, 30000);
+            .end((error, res) => {
+                if (error) return done(error);
+                assert.graphQL(res.body);
+
+                expect(res.body).to.have.property('data');
+                expect(res.body.data).to.have.property('asesor');
+
+                const { asesor } = res.body.data;
+                expect(asesor).to.be.a("object");
+                expect(asesor.usuarios).to.have.lengthOf(0);
+
+                idAsesor = asesor.id;
+
+                done();
+            });
+    });
+
+    it("Editar el asesor como administrador", (done) => {
+        request
+            .post("/")
+            .send({
+                query: EDITAR_ASESOR,
+                variables: {
+                    id: idAsesor,
+                    asesor: datosEditarAsesor
+                }
+            })
+            .set("Accept", "application/json")
+            .set("Content-type", "application/json")
+            .auth(tokenAdmin, { type: 'bearer' })
+            .expect(200)
+            .end((error, res) => revisarCamposEspecificos(error, res, done, datosEditarAsesor));
+    });
+
     it("Obtener un error si el numero de documento se repite", (done) => {
         request
             .post("/")
             .send({
                 query: EDITAR_ASESOR,
-                variables: camposParaEditarAsesor
+                variables: {
+                    id: idAsesor,
+                    asesor: { ...datosEditarAsesor, numeroDocumento: "admin" }
+                }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
@@ -240,60 +212,73 @@ describe("POST: Editar Asesor", () => {
                 expect(message).to.equal("Error: Ya existe un asesor con ese numero de documento!");
                 done();
             });
-    }, 30000);
+    });
 
     it("Editar los datos personales como administrador", (done) => {
         request
             .post("/")
             .send({
-                query: EDITAR_ASESOR_DATOS_PERSONALES,
-                variables: camposParaEditarDatosPersonales
+                query: EDITAR_ASESOR,
+                variables: {
+                    id: idAsesor,
+                    asesor: datosEditarDatosPersonalesAsesor
+                }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
             .auth(tokenAdmin, { type: 'bearer' })
             .expect(200)
-            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperadorDeEditarDatosPersonales));
-    }, 30000);
+            .end((error, res) => revisarCamposEspecificos(error, res, done, datosEditarDatosPersonalesAsesor));
+    });
+
     it("Editar la contraseña como administrador", (done) => {
         request
             .post("/")
             .send({
-                query: EDITAR_ASESOR_CLAVE,
-                variables: camposParaEditarClave
+                query: EDITAR_ASESOR,
+                variables: {
+                    id: idAsesor,
+                    asesor: datosEditarClaveAsesor
+                }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
             .auth(tokenAdmin, { type: 'bearer' })
             .expect(200)
-            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperadosDeEditarClave));
-    }, 30000);
+            .end((error, res) => revisarCamposEspecificos(error, res, done, datosEditarClaveAsesor));
+    });
 
-    it("Editar el estado como administrador", (done) => {
+    it("Editar la tasa de venta como administrador", (done) => {
         request
             .post("/")
             .send({
-                query: EDITAR_ASESOR_ESTADO,
-                variables: camposParaEditarEstado
+                query: EDITAR_ASESOR,
+                variables: {
+                    id: idAsesor,
+                    asesor: datosEditarTasaVentaAsesor
+                }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
             .auth(tokenAdmin, { type: 'bearer' })
             .expect(200)
-            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperadosDeEditarEstado));
-    }, 30000);
+            .end((error, res) => revisarCamposEspecificos(error, res, done, datosEditarTasaVentaAsesor));
+    });
 
-    it("Editar el saldo como administrador", (done) => {
+    it("Editar el valor minimo de un giro como administrador", (done) => {
         request
             .post("/")
             .send({
-                query: EDITAR_ASESOR_SALDO,
-                variables: camposParaEditarSaldo
+                query: EDITAR_ASESOR,
+                variables: {
+                    id: idAsesor,
+                    asesor: datosEditarValorMinimoGiro
+                }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
             .auth(tokenAdmin, { type: 'bearer' })
             .expect(200)
-            .end((error, res) => revisarCamposEspecificos(error, res, done, camposEsperadosDeEditarSaldo));
-    }, 30000);
+            .end((error, res) => revisarCamposEspecificos(error, res, done, datosEditarValorMinimoGiro));
+    });
 });

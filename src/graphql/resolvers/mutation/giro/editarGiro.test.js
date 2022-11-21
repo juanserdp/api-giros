@@ -1,7 +1,9 @@
 import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
-import { iniciarSesionComoAdmin } from "../../../../constants/login";
+import { iniciarSesionComoAdmin, iniciarSesionComoAsesor } from "../../../../constants/login";
 import { v4 as uuidv4 } from 'uuid';
+import { giroCamposGql, usuarioCamposGql } from "../../../../constants/camposGraphql";
+var atob = require('atob');
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
 
@@ -9,60 +11,15 @@ const { assert } = chai;
 const baseURL = "http://localhost:4000/graphql";
 const request = supertest(baseURL);
 const expect = chai.expect;
-let tokenAdmin = "";
+
+let tokenAsesor = "";
+let tokenUsuario = "";
+
+let idAsesor = "";
 let idUsuario = "";
 let idGiro = "";
-const CREAR_USUARIO = `
-mutation crearUsuario(
-    $asesor: ID!
-    $nombres: String!
-    $apellidos: String!
-    $tipoDocumento: String!
-    $numeroDocumento: String!
-    $clave: String!
-    $saldo: Float!
-    $capacidadPrestamo: Float!
-    $tasaVenta: Float!
-){
-    usuario: crearUsuario(
-        asesor: $asesor,
-        nombres: $nombres,
-        apellidos: $apellidos,
-        tipoDocumento: $tipoDocumento,
-        numeroDocumento: $numeroDocumento,
-        clave: $clave,
-        saldo: $saldo,
-        capacidadPrestamo: $capacidadPrestamo,
-        tasaVenta: $tasaVenta
-        ){
-            id
-            nombres
-            apellidos
-            tipoDocumento
-            numeroDocumento
-            clave
-            saldo
-            deuda
-            capacidadPrestamo
-            estado
-            tasaVenta
-            giros{
-                id
-            }
-    }
-}`;
+
 const numeroDocumento = uuidv4();
-const camposIngresados = {
-    asesor: "6324e92712898dffd630af61",
-    nombres: "Juansecito",
-    apellidos: "Rod",
-    tipoDocumento: "TI",
-    numeroDocumento: numeroDocumento,
-    clave: "12345",
-    saldo: 1700000,
-    capacidadPrestamo: 500000,
-    tasaVenta: 0.02
-};
 
 const CREAR_GIRO = `
 mutation CrearGiro(
@@ -74,8 +31,7 @@ mutation CrearGiro(
     $banco:String!,
     $tipoCuenta: String!,
     $numeroCuenta: String!,
-    $valorGiro: Float!,
-    $tasaCompra: Float!
+    $valorGiro: Float!
 ){
     giro: crearGiro(
         usuario: $usuario,
@@ -86,98 +42,38 @@ mutation CrearGiro(
         banco:$banco,
         tipoCuenta:$tipoCuenta,
         numeroCuenta:$numeroCuenta,
-        valorGiro:$valorGiro,
-        tasaCompra:$tasaCompra,
+        valorGiro:$valorGiro
         ){
-                id,
-                usuario,
-                nombres,
-                apellidos,
-                tipoDocumento,
-                numeroDocumento,
-                banco,
-                tipoCuenta,
-                numeroCuenta,
-                valorGiro,
-                comprobantePago,
-                fechaEnvio,
-                tasaCompra,
-                estadoGiro
+                ${giroCamposGql}
         }
 }
 `;
 
-const camposEsperadosCrearGiro = {
-    nombres: "Juansecito",
-    apellidos: "Rod",
-    tipoDocumento: "TI",
-    numeroDocumento: numeroDocumento,
-    banco: "bbva2",
-    tipoCuenta: "ahorros",
-    numeroCuenta: "2381932",
-    valorGiro: 2000000,
-    comprobantePago: null,
-    tasaCompra: 0.12,
-    estadoGiro: "PENDIENTE"
-};
-const camposEsperadosUsuarioDespuesEnviarGiro = {
-    nombres: "Juansecito",
-    apellidos: "Rod",
-    tipoDocumento: "TI",
-    numeroDocumento: numeroDocumento,
-    clave: "12345",
-    saldo: 0,
-    deuda: 300000,
-    capacidadPrestamo: 500000,
-    estado: "ACTIVO",
-    tasaVenta: 0.02,
-    giros: [{
-        nombres: "Juansecito",
-        apellidos: "Rod",
-        tipoDocumento: "TI",
-        numeroDocumento: numeroDocumento,
-        banco: "bbva2",
-        tipoCuenta: "ahorros",
-        numeroCuenta: "2381932",
-        valorGiro: 2000000,
-        comprobantePago: null,
-        tasaCompra: 0.12,
-        estadoGiro: "PENDIENTE"
-    }]
-};
-const OBTENER_USUARIOS = `
-query {
-    usuarios: obtenerUsuarios{
-        id
-        asesor{
-            id
-        }
-        nombres
-        apellidos
-        tipoDocumento
-        numeroDocumento
-        clave
-        saldo
-        deuda
-        capacidadPrestamo
-        estado
-        tasaVenta
-        giros{
-            nombres,
-            apellidos,
-            tipoDocumento,
-            numeroDocumento,
-            banco,
-            tipoCuenta,
-            numeroCuenta,
-            valorGiro,
-            comprobantePago,
-            tasaCompra,
-            estadoGiro
-        }
+const CREAR_USUARIO = `
+mutation crearUsuario(
+    $asesor: ID!
+    $nombres: String!
+    $apellidos: String!
+    $tipoDocumento: String!
+    $numeroDocumento: String!
+    $clave: String!
+    $saldo: Float!
+    $capacidadPrestamo: Float!
+){
+    usuario: crearUsuario(
+        asesor: $asesor,
+        nombres: $nombres,
+        apellidos: $apellidos,
+        tipoDocumento: $tipoDocumento,
+        numeroDocumento: $numeroDocumento,
+        clave: $clave,
+        saldo: $saldo,
+        capacidadPrestamo: $capacidadPrestamo
+        ){
+            ${usuarioCamposGql}
     }
-}
-`;
+}`;
+
 const EDITAR_GIRO = `
     mutation EditarGiro(
         $id: ID!,
@@ -187,29 +83,32 @@ const EDITAR_GIRO = `
             id:$id,
             giro:$giro
             ){
-                id,
-                usuario,
-                nombres,
-                apellidos,
-                tipoDocumento,
-                numeroDocumento,
-                banco,
-                tipoCuenta,
-                numeroCuenta,
-                valorGiro,
-                comprobantePago,
-                fechaEnvio,
-                tasaCompra,
-                estadoGiro
+                ${giroCamposGql}
         }
     }
 `;
+
+const datosEditarGiro = {
+    nombres: "nombresEditado",
+    apellidos: "apellidosEditado",
+    tipoDocumento: "tipoEditado",
+    numeroDocumento: "numeroEditado",
+    banco: "banco Popular",
+    tipoCuenta: "ahorros",
+    numeroCuenta: "12334234",
+    // estadoGiro: "EN PROCESO"
+};
+
+const datosEditarComprobantePagoGiro = {
+    comprobantePago: "354sf6s4dfa-asdf"
+};
+
 describe("POST: Editar Giro", () => {
-    it("Inicia sesion como administrador", (done) => {
+    it("Inicia sesion como asesor", (done) => {
         request
             .post("/")
             .send({
-                query: iniciarSesionComoAdmin
+                query: iniciarSesionComoAsesor
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -217,53 +116,84 @@ describe("POST: Editar Giro", () => {
                 if (error) return done(error);
                 assert.graphQL(res.body);
                 expect(res.body.data.login.token).to.be.a("string");
-                tokenAdmin = res.body.data.login.token;
+                tokenAsesor = res.body.data.login.token;
+                idAsesor = JSON.parse(atob(tokenAsesor.split('.')[1])).uid;
                 done();
             });
-    }, 30000);
+    });
 
     it("Crear un usuario", (done) => {
         request
             .post("/")
             .send({
                 query: CREAR_USUARIO,
-                variables: camposIngresados
+                variables: {
+                    asesor: idAsesor,
+                    nombres: "Juansecito",
+                    apellidos: "Rod",
+                    tipoDocumento: "TI",
+                    numeroDocumento: numeroDocumento,
+                    clave: "Juancesito12345",
+                    saldo: 10000000,
+                    capacidadPrestamo: 100
+                }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
-            .auth(tokenAdmin, { type: 'bearer' })
+            .auth(tokenAsesor, { type: 'bearer' })
             .expect(200)
             .end((error, res) => {
                 if (error) return done(error);
                 assert.graphQL(res.body);
-                const { usuario } = res.body.data;
-                idUsuario = usuario.id;
                 done();
             });
-    }, 30000);
+    });
 
-    it("Enviar giro", (done) => {
+    it("Inicia sesion como usuario", (done) => {
+        request
+            .post("/")
+            .send({
+                query: `
+                mutation{
+                    login(numeroDocumento: "${numeroDocumento}", clave: "Juancesito12345"){
+                        error
+                        token
+                    }
+                }
+            `
+            })
+            .set("Accept", "application/json")
+            .expect(200)
+            .end((error, res) => {
+                if (error) return done(error);
+                assert.graphQL(res.body);
+                expect(res.body.data.login.token).to.be.a("string");
+                tokenUsuario = res.body.data.login.token;
+                idUsuario = JSON.parse(atob(tokenUsuario.split('.')[1])).uid;
+                done();
+            });
+    });
+
+    it("Enviar giro como usuario", (done) => {
         request
             .post("/")
             .send({
                 query: CREAR_GIRO,
                 variables: {
                     usuario: idUsuario,
-                    nombres: "Juansecito",
-                    apellidos: "Rod",
-                    tipoDocumento: "TI",
-                    numeroDocumento: numeroDocumento,
+                    nombres: "giro5",
+                    apellidos: "luna0007",
+                    tipoDocumento: "cedul8",
+                    numeroDocumento: "10972",
                     banco: "bbva2",
                     tipoCuenta: "ahorros",
                     numeroCuenta: "2381932",
-                    valorGiro: 2000000,
-                    comprobantePago: null,
-                    tasaCompra: 0.12
+                    valorGiro: 10000
                 }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
-            .auth(tokenAdmin, { type: 'bearer' })
+            .auth(tokenUsuario, { type: 'bearer' })
             .expect(200)
             .end((error, res) => {
                 if (error) return done(error);
@@ -274,84 +204,12 @@ describe("POST: Editar Giro", () => {
 
                 const { giro } = res.body.data;
                 expect(giro).to.be.a("object");
+
                 idGiro = giro.id;
-                for (const prop in camposEsperadosCrearGiro) {
-                    expect(giro).to.have.property(prop);
-                    expect(giro[prop]).to.equal(camposEsperadosCrearGiro[prop]);
-                };
                 done();
             });
-    }, 30000);
+    });
 
-    it("Obtener el usuario para verificar el giro enviado", (done) => {
-        request
-            .post("/")
-            .send({
-                query: OBTENER_USUARIOS
-            })
-            .set("Accept", "application/json")
-            .set("Content-type", "application/json")
-            .auth(tokenAdmin, { type: 'bearer' })
-            .expect(200)
-            .end((error, res) => {
-                if (error) return done(error);
-                assert.graphQL(res.body);
-
-                expect(res.body).to.have.property('data');
-                expect(res.body.data).to.have.property('usuarios');
-
-                const { usuarios } = res.body.data;
-                expect(usuarios).to.be.a("array");
-
-                for (const usuario of usuarios) {
-
-                    if (usuario.numeroDocumento == numeroDocumento) {
-                        for (const prop in camposEsperadosUsuarioDespuesEnviarGiro) {
-                            expect(usuario).to.have.property(prop);
-
-                            if (prop == 'nombres' || prop == 'apellidos' ||
-                                prop == 'tipoDocumento' || prop == 'numeroDocumento' ||
-                                prop == 'estado') {
-                                expect(usuario[prop]).to.be.a("string");
-                                expect(usuario[prop]).to.equal(camposEsperadosUsuarioDespuesEnviarGiro[prop]);
-                            }
-                            else if (prop == 'clave') {
-                                expect(usuario[prop]).to.be.a("string");
-                                expect(usuario[prop]).to.have.lengthOf(60);
-                            }
-                            else if (prop == 'saldo' || prop == 'tasaVenta' ||
-                                prop == 'deuda' || prop == 'capacidadPrestamo') {
-                                expect(usuario[prop]).to.be.a("number");
-                                expect(usuario[prop]).to.equal(camposEsperadosUsuarioDespuesEnviarGiro[prop]);
-                            }
-                            else if (prop == 'giros') {
-                                expect(usuario[prop]).to.be.a("array");
-                                for (const giro of usuario.giros) {
-                                    for (const prop in camposEsperadosUsuarioDespuesEnviarGiro.giros[0]) {
-                                        expect(giro).to.have.property(prop);
-                                        expect(giro[prop]).to.equal(camposEsperadosUsuarioDespuesEnviarGiro.giros[0][prop]);
-                                    }
-                                }
-                            }
-                        };
-                    }
-                };
-                done();
-            });
-    }, 30000);
-    const camposEsperadosEditarGiro = {
-        nombres: "Fernanda",
-        apellidos: "Cardenas",
-        tipoDocumento: "cedula",
-        numeroDocumento: "124",
-        banco: "bancolombia",
-        tipoCuenta: "ahorros",
-        numeroCuenta: "1241423",
-        valorGiro: 2000000,
-        comprobantePago: null,
-        tasaCompra: 0.12,
-        estadoGiro: "COMPLETADO"
-    };
     it("Editar giro", (done) => {
         request
             .post("/")
@@ -359,22 +217,12 @@ describe("POST: Editar Giro", () => {
                 query: EDITAR_GIRO,
                 variables: {
                     id: idGiro,
-                    giro: {
-                        nombres: "Fernanda",
-                        apellidos: "Cardenas",
-                        tipoDocumento: "cedula",
-                        numeroDocumento: "124",
-                        banco: "bancolombia",
-                        tipoCuenta: "ahorros",
-                        numeroCuenta: "1241423",
-                        tasaCompra: 0.12,
-                        estadoGiro: "COMPLETADO"
-                    }
+                    giro: datosEditarGiro
                 }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
-            .auth(tokenAdmin, { type: 'bearer' })
+            .auth(tokenUsuario, { type: 'bearer' })
             .expect(200)
             .end((error, res) => {
                 if (error) return done(error);
@@ -386,11 +234,43 @@ describe("POST: Editar Giro", () => {
                 const { giro } = res.body.data;
                 expect(giro).to.be.a("object");
 
-                for (const prop in camposEsperadosEditarGiro) {
+                for (const prop in datosEditarGiro) {
                     expect(giro).to.have.property(prop);
-                    expect(giro[prop]).to.equal(camposEsperadosEditarGiro[prop]);
+                    expect(giro[prop]).to.equal(datosEditarGiro[prop]);
                 };
                 done();
             });
-    }, 30000);
+    });
+
+    it("Editar comprobante de pago del giro", (done) => {
+        request
+            .post("/")
+            .send({
+                query: EDITAR_GIRO,
+                variables: {
+                    id: idGiro,
+                    giro: datosEditarComprobantePagoGiro
+                }
+            })
+            .set("Accept", "application/json")
+            .set("Content-type", "application/json")
+            .auth(tokenUsuario, { type: 'bearer' })
+            .expect(200)
+            .end((error, res) => {
+                if (error) return done(error);
+                assert.graphQL(res.body);
+
+                expect(res.body).to.have.property('data');
+                expect(res.body.data).to.have.property('giro');
+
+                const { giro } = res.body.data;
+                expect(giro).to.be.a("object");
+
+                for (const prop in datosEditarComprobantePagoGiro) {
+                    expect(giro).to.have.property(prop);
+                    expect(giro[prop]).to.equal(datosEditarComprobantePagoGiro[prop]);
+                };
+                done();
+            });
+    });
 });

@@ -13,6 +13,7 @@ export const editarAsesor = async (_root, { id, asesor }, context) => {
         (context.rol === "ADMINISTRADOR" ||
             context.rol === "ASESOR")) {
         try {
+
             const { numeroDocumento, clave } = asesor;
             if (clave) {
                 validarClave(clave, (errores, clave) => {

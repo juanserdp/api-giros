@@ -2,7 +2,9 @@ import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
 import { Usuario as usuarioSchema } from "../../../../models/Usuario";
 import { Giro as giroSchema } from "../../../../models/Giro";
-import { iniciarSesionComoAdmin } from "../../../../constants/login";
+import { iniciarSesionComoAdmin, iniciarSesionComoAsesor } from "../../../../constants/login";
+import { usuarioCamposGql } from "../../../../constants/camposGraphql";
+var atob = require('atob');
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
 
@@ -10,38 +12,23 @@ const { assert } = chai;
 const baseURL = "http://localhost:4000/graphql";
 const request = supertest(baseURL);
 const expect = chai.expect;
-let tokenAdmin = "";
+let tokenAsesor = "";
+let idAsesor = "";
 
 const OBTENER_USUARIOS_POR_ID_ASESOR = `
 query ObtenerUsuariosPorIdAsesor($id:ID!){
     usuarios: obtenerUsuariosPorIdAsesor(id:$id){
-        id,
-        asesor{
-            id
-        },
-        nombres,
-        apellidos,
-        tipoDocumento,
-        numeroDocumento,
-        clave,
-        saldo,
-        deuda,
-        capacidadPrestamo,
-        estado,
-        giros{
-            id
-        },
-        tasaVenta
+        ${usuarioCamposGql}
     }
 }
 `;
 
 describe("POST: Obtener Usuarios Por Id Asesor", () => {
-    it("Inicia sesion como administrador", (done) => {
+    it("Inicia sesion como asesor", (done) => {
         request
             .post("/")
             .send({
-                query: iniciarSesionComoAdmin
+                query: iniciarSesionComoAsesor
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -49,22 +36,23 @@ describe("POST: Obtener Usuarios Por Id Asesor", () => {
                 if (error) return done(error);
                 assert.graphQL(res.body);
                 expect(res.body.data.login.token).to.be.a("string");
-                tokenAdmin = res.body.data.login.token;
+                tokenAsesor = res.body.data.login.token;
+                idAsesor = JSON.parse(atob(tokenAsesor.split('.')[1])).uid;
                 done();
             });
-    }, 30000);
+    });
     it("Obtener usuarios como administrador", (done) => {
         request
             .post("/")
             .send({
                 query: OBTENER_USUARIOS_POR_ID_ASESOR,
                 variables:{
-                    id: "6323b8cf0c92ed905057721a"
+                    id: idAsesor
                 }
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
-            .auth(tokenAdmin, { type: 'bearer' })
+            .auth(tokenAsesor, { type: 'bearer' })
             .expect(200)
             .end((error, res) => {
                 if (error) return done(error);
@@ -98,5 +86,5 @@ describe("POST: Obtener Usuarios Por Id Asesor", () => {
                 };
                 done();
             });
-    }, 30000);
+    });
 });

@@ -3,12 +3,14 @@ import AuthorizationError from "../../../../errors/AuthorizationError";
 
 export const crearMensaje = async (_root, {
     mensaje,
+    imagen
 }, context) => {
     if (context.autorizacion &&
         (context.rol === "ADMINISTRADOR")) {
         try {
             const nuevoMensaje = new Mensaje({
                 mensaje,
+                imagen,
                 fechaCreacion: (new Date()).toLocaleDateString(),
                 fechaUltimaModificacion: (new Date()).toLocaleDateString(),
             });

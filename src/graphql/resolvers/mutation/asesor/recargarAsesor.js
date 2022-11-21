@@ -7,13 +7,17 @@ export const recargarAsesor = async (root, { numeroDocumento, valorRecarga }, co
     if (context.autorizacion &&
         context.rol == "ADMINISTRADOR") {
         try {
+            const admin = await Asesor.find({ numeroDocumento: "admin" });
             const asesor = await Asesor.find(
                 { numeroDocumento },
                 (error, data) => handleResponse(error, data, "Recargar Asesor"))
                 .clone();
             if (asesor.length == 0) throw new Error("El asesor no existe!");
             else {
-                const { _id, saldo } = asesor[0];
+                const { _id, saldo, tasaPreferencial, usarTasaPreferencial } = asesor[0];
+                const { tasaVenta } = admin[0];
+
+                valorRecarga = valorRecarga / (usarTasaPreferencial ? tasaPreferencial : tasaVenta);
                 const asesorEditado = await Asesor.findByIdAndUpdate(
                     _id,
                     { saldo: saldo + valorRecarga },

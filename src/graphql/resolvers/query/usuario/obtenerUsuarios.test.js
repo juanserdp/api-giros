@@ -28,7 +28,6 @@ query {
         deuda
         capacidadPrestamo
         estado
-        tasaVenta
         giros{
             id
         }
@@ -52,7 +51,7 @@ describe("POST: Obtener Usuarios", () => {
                 tokenAdmin = res.body.data.login.token;
                 done();
             });
-    }, 30000);
+    });
     it("Obtener usuarios como administrador", (done) => {
         request
             .post("/")
@@ -95,5 +94,5 @@ describe("POST: Obtener Usuarios", () => {
                 };
                 done();
             });
-    }, 30000);
+    });
 });

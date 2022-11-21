@@ -1,7 +1,9 @@
 import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
-import { iniciarSesionComoAdmin } from "../../../../constants/login";
+import { iniciarSesionComoAdmin, iniciarSesionComoAsesor } from "../../../../constants/login";
 import { v4 as uuidv4 } from 'uuid';
+import { usuarioCamposGql } from "../../../../constants/camposGraphql";
+var atob = require('atob');
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
 
@@ -9,7 +11,12 @@ const { assert } = chai;
 const baseURL = "http://localhost:4000/graphql";
 const request = supertest(baseURL);
 const expect = chai.expect;
-let tokenAdmin = "";
+
+let tokenAsesor = "";
+let idAsesor = "";
+
+const numeroDocumento = uuidv4();
+
 const CREAR_USUARIO = `
 mutation crearUsuario(
     $asesor: ID!
@@ -20,7 +27,6 @@ mutation crearUsuario(
     $clave: String!
     $saldo: Float!
     $capacidadPrestamo: Float!
-    $tasaVenta: Float!
 ){
     usuario: crearUsuario(
         asesor: $asesor,
@@ -30,56 +36,44 @@ mutation crearUsuario(
         numeroDocumento: $numeroDocumento,
         clave: $clave,
         saldo: $saldo,
-        capacidadPrestamo: $capacidadPrestamo,
-        tasaVenta: $tasaVenta
+        capacidadPrestamo: $capacidadPrestamo
         ){
-            id
-            nombres
-            apellidos
-            tipoDocumento
-            numeroDocumento
-            clave
-            saldo
-            deuda
-            capacidadPrestamo
-            estado
-            tasaVenta
-            giros{
-                id
-            }
+            ${usuarioCamposGql}
     }
 }`;
-const numeroDocumento = uuidv4();
-const camposIngresados = {
-    asesor: "6324e92712898dffd630af61",
+
+const datosCrearUsuario = {
+    asesor: idAsesor,
     nombres: "Juansecito",
     apellidos: "Rod",
     tipoDocumento: "TI",
     numeroDocumento: numeroDocumento,
-    clave: "12345",
+    clave: "Juancesito12345",
     saldo: 10000000,
-    capacidadPrestamo: 100,
-    tasaVenta: 0.02
+    capacidadPrestamo: 100
 };
+
 const camposEsperados = {
     nombres: "Juansecito",
     apellidos: "Rod",
     tipoDocumento: "TI",
     numeroDocumento: numeroDocumento,
-    clave: "12345",
+    clave: "Juancesito12345",
     saldo: 10000000,
     deuda: 0,
     capacidadPrestamo: 100,
     estado: "ACTIVO",
-    tasaVenta: 0.02,
+    tasaPreferencial: 1,
+    usarTasaPreferencial: false,
     giros: []
 };
+
 describe("POST: Crear Usuario", () => {
-    it("Inicia sesion como administrador", (done) => {
+    it("Inicia sesion como asesor", (done) => {
         request
             .post("/")
             .send({
-                query: iniciarSesionComoAdmin
+                query: iniciarSesionComoAsesor
             })
             .set("Accept", "application/json")
             .expect(200)
@@ -87,21 +81,22 @@ describe("POST: Crear Usuario", () => {
                 if (error) return done(error);
                 assert.graphQL(res.body);
                 expect(res.body.data.login.token).to.be.a("string");
-                tokenAdmin = res.body.data.login.token;
+                tokenAsesor = res.body.data.login.token;
+                idAsesor = JSON.parse(atob(tokenAsesor.split('.')[1])).uid;
                 done();
             });
-    }, 30000);
-    
-    it("Crear un usuario como administrador", (done) => {
+    });
+
+    it("Crear un usuario como asesor", (done) => {
         request
             .post("/")
             .send({
                 query: CREAR_USUARIO,
-                variables: camposIngresados
+                variables: {...datosCrearUsuario, asesor: idAsesor}
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
-            .auth(tokenAdmin, { type: 'bearer' })
+            .auth(tokenAsesor, { type: 'bearer' })
             .expect(200)
             .end((error, res) => {
                 if (error) return done(error);
@@ -113,14 +108,14 @@ describe("POST: Crear Usuario", () => {
                 const { usuario } = res.body.data;
                 expect(usuario).to.be.a("object");
 
-                for(const prop in camposEsperados){
+                for (const prop in camposEsperados) {
                     expect(usuario).to.have.property(prop);
-                    if(prop == 'clave'){
+                    if (prop == 'clave') {
                         expect(usuario[prop]).to.be.a("string");
                         expect(usuario[prop]).to.have.lengthOf(60);
                         continue;
                     };
-                    if(prop == 'giros'){
+                    if (prop == 'giros') {
                         expect(usuario[prop]).to.be.a("array");
                         expect(usuario[prop]).to.have.lengthOf(0);
                         continue;
@@ -129,18 +124,18 @@ describe("POST: Crear Usuario", () => {
                 };
                 done();
             });
-    }, 30000);
+    });
 
     it("Obtener un error si el numero de documento se repite", (done) => {
         request
             .post("/")
             .send({
                 query: CREAR_USUARIO,
-                variables: camposIngresados
+                variables: {...datosCrearUsuario, asesor: idAsesor}
             })
             .set("Accept", "application/json")
             .set("Content-type", "application/json")
-            .auth(tokenAdmin, { type: 'bearer' })
+            .auth(tokenAsesor, { type: 'bearer' })
             .expect(500)
             .end((error, res) => {
                 if (error) return done(error);
@@ -155,5 +150,5 @@ describe("POST: Crear Usuario", () => {
                 expect(message).to.equal("Error: El usuario ya existe!");
                 done();
             });
-    }, 30000)
+    })
 });
