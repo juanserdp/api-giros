@@ -106,6 +106,7 @@ const datosEditarUsuario = {
     estado: "INACTIVO",
     tasaPreferencial: 2,
     usarTasaPreferencial: true,
+    tasaVenta: 2
 };
 
 const camposEsperados = {
@@ -120,6 +121,7 @@ const camposEsperados = {
     estado: "INACTIVO",
     tasaPreferencial: 2,
     usarTasaPreferencial: true,
+    tasaVenta: 2,
     giros: []
 };
 

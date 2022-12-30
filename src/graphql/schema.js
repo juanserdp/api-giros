@@ -74,13 +74,18 @@ export const typeDefs = `
         crearGiro(
             usuario: ID!,
             nombres: String!,
+            nombresRemitente: String!,
             apellidos: String!,
+            apellidosRemitente: String!,
             tipoDocumento: String!,
+            tipoDocumentoRemitente: String!,
             numeroDocumento: String!,
+            numeroDocumentoRemitente: String!,
             banco: String!,
             tipoCuenta: String!,
             numeroCuenta: String!,
-            valorGiro: Float!
+            valorGiro: Float!,
+            tasaCompra: Float!
             ): Giro!
         editarGiro(
             id: ID!,
@@ -124,22 +129,27 @@ export const typeDefs = `
         giros: [Giro],
         estado: String,
         tasaPreferencial: Float,
-        usarTasaPreferencial: Boolean
+        usarTasaPreferencial: Boolean,
+        tasaVenta: Float
     }
     type Giro implements DatosPersonales{
         id: ID,
         usuario: ID,
         nombres: String,
+        nombresRemitente: String,
         apellidos: String,
+        apellidosRemitente: String,
         tipoDocumento: String,
+        tipoDocumentoRemitente: String,
         numeroDocumento: String,
+        numeroDocumentoRemitente: String,
         banco: String,
         tipoCuenta: String,
         numeroCuenta: String,
         valorGiro: Float,
         comprobantePago: String,
         fechaEnvio: String,
-        #tasaCompra: Float,
+        tasaCompra: Float,
         estadoGiro: String
     }
     type Asesor implements DatosPersonales{
@@ -196,13 +206,18 @@ export const typeDefs = `
         capacidadPrestamo: Float,
         estado: String,
         tasaPreferencial: Float,
-        usarTasaPreferencial: Boolean
+        usarTasaPreferencial: Boolean,
+        tasaVenta: Float
     }
     input GiroForUpdateInput{
         nombres: String,
+        nombresRemitente: String,
         apellidos: String,
+        apellidosRemitente: String,
         tipoDocumento: String,
+        tipoDocumentoRemitente: String,
         numeroDocumento: String,
+        numeroDocumentoRemitente: String,
         banco: String,
         tipoCuenta: String,
         numeroCuenta: String,

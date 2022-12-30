@@ -19,8 +19,8 @@ export const recargarUsuario = async (root, { numeroDocumento, valorRecarga }, c
                 const { _id, asesor, saldo, tasaPreferencial, usarTasaPreferencial } = usuario[0];
                 const { tasaVenta } = asesor;
 
-                valorRecarga = valorRecarga / (usarTasaPreferencial ? tasaPreferencial : tasaVenta);
-                
+                valorRecarga = Number((valorRecarga / (usarTasaPreferencial ? tasaPreferencial : tasaVenta)).toFixed(2));
+
                 const usuarioEditado = await Usuario.findByIdAndUpdate(
                     _id,
                     { saldo: saldo + valorRecarga },

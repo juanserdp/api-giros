@@ -2,6 +2,7 @@ import chai from "chai";
 import chaiGraphQL from 'chai-graphql';
 import {Giro as giroSchema} from "../../../../models/Giro";
 import { iniciarSesionComoAdmin } from "../../../../constants/login";
+import { giroCamposGql } from "../../../../constants/camposGraphql";
 chai.use(chaiGraphQL);
 const supertest = require("supertest");
 
@@ -17,19 +18,7 @@ let tokenUsuario;
 const OBTENER_GIROS_USUARIOS_ID_ASESOR = `
     query ObtenerGirosPorUsuariosPorIdAsesor($id: ID!){
         giros: obtenerGirosPorUsuariosPorIdAsesor(id: $id){
-                id,
-                usuario,
-                nombres,
-                apellidos,
-                tipoDocumento,
-                numeroDocumento,
-                banco,
-                tipoCuenta,
-                numeroCuenta,
-                valorGiro,
-                comprobantePago,
-                fechaEnvio,
-                estadoGiro
+            ${giroCamposGql}
         }
     }
 `;

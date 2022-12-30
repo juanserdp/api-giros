@@ -7,31 +7,41 @@ import Usuario from "../../../../models/Usuario";
 export const crearGiro = async (_root,
     { usuario,
         nombres,
+        nombresRemitente,
         apellidos,
+        apellidosRemitente,
         tipoDocumento,
+        tipoDocumentoRemitente,
         numeroDocumento,
+        numeroDocumentoRemitente,
         banco,
         tipoCuenta,
         numeroCuenta,
         valorGiro,
-        // tasaCompra
+        tasaCompra
     }, context) => {
     if (context.autorizacion &&
         (context.rol === "USUARIO" ||
             context.rol === "ASESOR" ||
             context.rol === "ADMINISTRADOR")) {
         try {
+            const valor = Number((valorGiro / tasaCompra).toFixed(2));
             const giro = new Giro({
                 usuario,
                 nombres,
+                nombresRemitente,
                 apellidos,
+                apellidosRemitente,
                 tipoDocumento,
+                tipoDocumentoRemitente,
                 numeroDocumento,
+                numeroDocumentoRemitente,
                 banco,
                 tipoCuenta,
                 numeroCuenta,
-                valorGiro,
+                valorGiro: valor,
                 fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
+                tasaCompra,
                 estadoGiro: "PENDIENTE"
             });
             const usuarioInfo = await Usuario.findById(
@@ -41,11 +51,11 @@ export const crearGiro = async (_root,
             if (usuarioInfo) {
                 const { giros } = usuarioInfo;
                 const transferencia = new EnviarGiro(usuarioInfo.saldo, usuarioInfo.deuda, usuarioInfo.capacidadPrestamo);
-                if (transferencia.puedeHacerElGiro(valorGiro, (error, value) => {
+                if (transferencia.puedeHacerElGiro(valor, (error, value) => {
                     if (value) return true;
                     else return false;
                 })) {
-                    transferencia.hacerGiro(valorGiro);
+                    transferencia.hacerGiro(valor);
                     const response = await giro.save();
                     if (response) {
                         const { _id } = response;

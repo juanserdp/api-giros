@@ -79,6 +79,7 @@ const camposEsperados = {
     estado: "ACTIVO",
     tasaPreferencial: 1,
     usarTasaPreferencial: false,
+    tasaVenta: 1,
     giros: []
 };
 

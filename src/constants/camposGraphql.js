@@ -32,15 +32,20 @@ export const usuarioCamposGql = `
     estado
     tasaPreferencial
     usarTasaPreferencial
+    tasaVenta
 `;
 
 export const giroCamposGql = `
     id
     usuario
     nombres
+    nombresRemitente
     apellidos
+    apellidosRemitente
     tipoDocumento
+    tipoDocumentoRemitente
     numeroDocumento
+    numeroDocumentoRemitente
     banco
     tipoCuenta
     numeroCuenta
@@ -48,6 +53,7 @@ export const giroCamposGql = `
     comprobantePago
     fechaEnvio
     estadoGiro
+    tasaCompra
 `;
 
 export const mensajeCamposGql = `

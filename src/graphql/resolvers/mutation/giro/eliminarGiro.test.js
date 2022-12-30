@@ -26,24 +26,34 @@ const CREAR_GIRO = `
 mutation CrearGiro(
     $usuario: ID!,
     $nombres: String!,
+    $nombresRemitente: String!,
     $apellidos: String!,
+    $apellidosRemitente: String!,
     $tipoDocumento: String!,
+    $tipoDocumentoRemitente: String!,
     $numeroDocumento: String!,
+    $numeroDocumentoRemitente: String!,
     $banco:String!,
     $tipoCuenta: String!,
     $numeroCuenta: String!,
-    $valorGiro: Float!
+    $valorGiro: Float!,
+    $tasaCompra: Float!
 ){
     giro: crearGiro(
         usuario: $usuario,
         nombres: $nombres,
-        apellidos:$apellidos,
-        tipoDocumento:$tipoDocumento,
-        numeroDocumento:$numeroDocumento,
+        nombresRemitente: $nombresRemitente,
+        apellidos: $apellidos,
+        apellidosRemitente: $apellidosRemitente,
+        tipoDocumento: $tipoDocumento,
+        tipoDocumentoRemitente: $tipoDocumentoRemitente,
+        numeroDocumento: $numeroDocumento,
+        numeroDocumentoRemitente: $numeroDocumentoRemitente,
         banco:$banco,
         tipoCuenta:$tipoCuenta,
         numeroCuenta:$numeroCuenta,
-        valorGiro:$valorGiro
+        valorGiro:$valorGiro,
+        tasaCompra: $tasaCompra
         ){
                 ${giroCamposGql}
         }
@@ -177,13 +187,18 @@ describe("POST: Eliminar Giro", () => {
                 variables: {
                     usuario: idUsuario,
                     nombres: "giro5",
+                    nombresRemitente: "juan",
                     apellidos: "luna0007",
+                    apellidosRemitente: "saitama",
                     tipoDocumento: "cedul8",
+                    tipoDocumentoRemitente: "cedul8",
                     numeroDocumento: "10972",
+                    numeroDocumentoRemitente: "10972123",
                     banco: "bbva2",
                     tipoCuenta: "ahorros",
                     numeroCuenta: "2381932",
-                    valorGiro: 10000
+                    valorGiro: 10000,
+                    tasaCompra: 1
                 }
             })
             .set("Accept", "application/json")

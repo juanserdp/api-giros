@@ -28,6 +28,7 @@ query {
         deuda
         capacidadPrestamo
         estado
+        tasaVenta
         giros{
             id
         }
@@ -82,7 +83,7 @@ describe("POST: Obtener Usuarios", () => {
                             expect(usuario[prop]).to.be.a("string");
                             expect(usuario[prop]).to.have.lengthOf(60);
                         }
-                        else if (prop == 'saldo' || prop == 'tasaVenta' ||
+                        else if (prop == 'saldo' || prop == 'tasaVenta' || prop == 'tasaPreferencial' ||
                             prop == 'deuda') expect(usuario[prop]).to.be.a("number");
                         else if (prop == 'giros') {
                             expect(usuario[prop]).to.be.a("array");

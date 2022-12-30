@@ -11,7 +11,15 @@ const GiroSchema = new Schema(
       type: String,
       required: true,
     },
+    nombresRemitente: {
+      type: String,
+      required: true,
+    },
     apellidos: {
+      type: String,
+      required: true,
+    },
+    apellidosRemitente: {
       type: String,
       required: true,
     },
@@ -19,7 +27,15 @@ const GiroSchema = new Schema(
       type: String,
       required: true,
     },
+    tipoDocumentoRemitente: {
+      type: String,
+      required: true,
+    },
     numeroDocumento: {
+      type: String,
+      required: true,
+    },
+    numeroDocumentoRemitente: {
       type: String,
       required: true,
     },
@@ -49,10 +65,10 @@ const GiroSchema = new Schema(
       type: String,
       required: true,
     },
-    // tasaCompra: {
-    //   type: Number,
-    //   required: true,
-    // },
+    tasaCompra: {
+      type: Number,
+      required: true,
+    },
     estadoGiro: {
       type: String,
       required: false,

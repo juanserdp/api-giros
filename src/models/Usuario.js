@@ -59,7 +59,12 @@ const UsuarioSchema = new Schema({
         type: Boolean,
         required: false,
         default: false
-    }
+    },
+    tasaVenta: {
+        type: Number,
+        required: false, // CREAR ASESOR - POR DEFECTO - TASA VENTA = 0
+        default: 1
+    },
 }, { collection: "Usuarios" });
 
 export default model("Usuario", UsuarioSchema);
