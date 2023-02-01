@@ -55,7 +55,12 @@ const AsesorSchema = new Schema({
         type: Boolean,
         required: false,
         default: false
-    }
+    },
+    movimientos: [{
+        type: Schema.Types.ObjectId,
+        ref: "Movimiento",
+        required: true
+    }]
 }, { collection: "Asesores" });
 
 export default model("Asesor", AsesorSchema);

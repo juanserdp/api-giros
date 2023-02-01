@@ -19,26 +19,32 @@ export const recargarUsuario = async (root, { numeroDocumento, valorRecarga }, c
                 const { _id, asesor, saldo, tasaPreferencial, usarTasaPreferencial } = usuario[0];
                 const { tasaVenta } = asesor;
 
-                valorRecarga = Number((valorRecarga / (usarTasaPreferencial ? tasaPreferencial : tasaVenta)).toFixed(2));
+                const transferencia = Recargar(asesor.saldo, null, null, valorRecarga);
 
-                const usuarioEditado = await Usuario.findByIdAndUpdate(
-                    _id,
-                    { saldo: saldo + valorRecarga },
-                    { new: true },
-                    (error, data) => handleResponse(error, data, "Recargar Usuario"))
-                    .clone();
-                if (usuarioEditado) {
-                    const { _id, saldo } = asesor;
-                    const asesorEditado = await Asesor.findByIdAndUpdate(
+                if (transferencia.puedeHacerLaRecarga(valorRecarga, (error, value) => {
+                    if (value) return true;
+                    else return false;
+                })) {
+                    const usuarioEditado = await Usuario.findByIdAndUpdate(
                         _id,
-                        { saldo: saldo - valorRecarga },
+                        { saldo: saldo + valorRecarga },
                         { new: true },
                         (error, data) => handleResponse(error, data, "Recargar Usuario"))
                         .clone();
-                    if (asesorEditado) return usuarioEditado;
-                    else throw new Error("No se pudo descontar al asesor el saldo");
+                    if (usuarioEditado) {
+                        const { _id, saldo } = asesor;
+                        const update = transferencia.obtenerCuentas();
+                        const asesorEditado = await Asesor.findByIdAndUpdate(
+                            _id,
+                            { saldo: update.saldo },
+                            { new: true },
+                            (error, data) => handleResponse(error, data, "Recargar Usuario"))
+                            .clone();
+                        if (asesorEditado) return usuarioEditado;
+                        else throw new Error("No se pudo descontar al asesor el saldo");
+                    }
+                    else throw new Error("No se pudo recargar el usuario");
                 }
-                else throw new Error("No se pudo recargar el usuario");
             }
 
         } catch (error) {

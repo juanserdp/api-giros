@@ -65,6 +65,11 @@ const UsuarioSchema = new Schema({
         required: false, // CREAR ASESOR - POR DEFECTO - TASA VENTA = 0
         default: 1
     },
+    movimientos: [{
+        type: Schema.Types.ObjectId,
+        ref: "Movimiento",
+        required: true
+    }]
 }, { collection: "Usuarios" });
 
 export default model("Usuario", UsuarioSchema);

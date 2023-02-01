@@ -20,6 +20,9 @@ export const typeDefs = `
 
         """ MENSAJES """
         obtenerMensajes: [Mensaje]!
+
+        """ MOVIMIENTOS """
+        obtenerMovimientos: [Movimiento]!
     }
 
     type Mutation{
@@ -165,7 +168,8 @@ export const typeDefs = `
         tasaVenta: Float,
         valorMinimoGiro: Float,
         tasaPreferencial: Float,
-        usarTasaPreferencial: Boolean
+        usarTasaPreferencial: Boolean,
+        movimientos: [Movimiento],
     }
     type Token{
         token: String,
@@ -178,6 +182,16 @@ export const typeDefs = `
         imagen: String,
         fechaCreacion: String,
         fechaUltimaModificacion: String
+    }
+
+    type Movimiento{
+        id: ID,
+        valor: Float,
+        saldo: Float,
+        deuda: Float,
+        fechaEnvio: String,
+        sentido: String,
+        concepto: String
     }
 
 
