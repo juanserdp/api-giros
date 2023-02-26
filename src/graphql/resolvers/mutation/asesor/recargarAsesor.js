@@ -63,7 +63,7 @@ export const recargarAsesor = async (root, { numeroDocumento, valorRecarga }, co
                                 saldo: update.saldo,
                                 fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
                                 sentido: "DEUDA",
-                                concepto: "Recarga del administrador"
+                                concepto: `Recarga al asesor identificado con: ${asesor[0].numeroDocumento}`
                             });
 
                             // SE GUARDA EL MOVIMIENTO DEL ADMINISTRADOR
@@ -81,7 +81,7 @@ export const recargarAsesor = async (root, { numeroDocumento, valorRecarga }, co
                                     (error, data) => handleResponse(error, data, "Recargar Admin"))
                                     .clone();
                                 if (adminEditado) return asesorEditado;
-                                else throw new Error("No se pudo modificar el saldo del administrador");
+                                else throw new Error("No se pudo descontar al administrador el saldo");
                             }
                             else throw new Error("No se pudo crear el registro del movimiento del dinero");
                         }

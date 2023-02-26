@@ -10,6 +10,8 @@ export const typeDefs = `
 
         """ ASESORES """
         obtenerAsesores: [Asesor]!
+        obtenerTasaAdmin: Asesor!
+        obtenerTasaAsesorPorId: Asesor!
         obtenerAsesorPorId(id: ID!): Asesor!
 
         """ GIROS """
@@ -133,7 +135,8 @@ export const typeDefs = `
         estado: String,
         tasaPreferencial: Float,
         usarTasaPreferencial: Boolean,
-        tasaVenta: Float
+        tasaVenta: Float,
+        movimientos: [Movimiento]
     }
     type Giro implements DatosPersonales{
         id: ID,
@@ -193,7 +196,10 @@ export const typeDefs = `
         sentido: String,
         concepto: String
     }
-
+    
+    type Tasa{
+        tasa: Float
+    }
 
     """ INPUTS """
     input AsesorForUpdateInput{

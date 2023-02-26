@@ -2,6 +2,7 @@ import AuthorizationError from "../../../../errors/AuthorizationError";
 import EnviarGiro from "../../../../helpers/EnviarGiro";
 import { handleResponse } from "../../../../helpers/handleResponse";
 import ObtenerGananciasGiro from "../../../../helpers/ObtenerGananciasGiro";
+import { revisarTasas } from "../../../../helpers/revisarTasas";
 import Asesor from "../../../../models/Asesor";
 import Giro from "../../../../models/Giro";
 import Movimiento from "../../../../models/Movimiento";
@@ -53,6 +54,28 @@ export const crearGiro = async (_root,
                 (error, data) => handleResponse(error, data, "Crear Giro"))
                 .clone();
 
+            const asesorInfo = await Asesor.findById(
+                usuarioInfo.asesor,
+                (error, data) => handleResponse(error, data, "Crear Giro"))
+                .clone();
+
+            if (!asesorInfo) throw new Error("No se pudo recuperar el asesor!");
+
+            let adminInfo = await Asesor.find(
+                { numeroDocumento: "admin" },
+                (error, data) => handleResponse(error, data, "Crear Giro"))
+                .clone();
+
+            if (!adminInfo[0]) throw new Error("No se pudo recuperar el asesor!");
+
+            adminInfo = adminInfo[0];
+
+            revisarTasas(adminInfo.tasaVenta,
+                asesorInfo.tasaVenta,
+                usuarioInfo.tasaVenta, ({ error }) => {
+                    if (error) throw new Error(error);
+                });
+
             if (usuarioInfo) {
                 const { giros } = usuarioInfo;
                 const transferencia = new EnviarGiro(usuarioInfo.saldo, usuarioInfo.deuda, usuarioInfo.capacidadPrestamo);
@@ -65,101 +88,108 @@ export const crearGiro = async (_root,
                     if (response) {
                         const { _id } = response;
                         const update = transferencia.obtenerCuentas();
+
+                        const movimientoUsuarioPagoGiro = new Movimiento({
+                            valor: valorGiro,
+                            saldo: usuarioInfo.saldo - valorGiro,
+                            fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
+                            sentido: "DEUDA",
+                            concepto: `Valor del giro`
+                        })
+
+                        const responseMovimientoUsuarioPagoGiro = await movimientoUsuarioPagoGiro.save();
+
                         const usuarioModificado = await Usuario.findByIdAndUpdate(
                             usuario,
-                            { ...update, giros: [...giros, _id] },
+                            {
+                                ...update,
+                                giros: [...giros, _id],
+                                movimientos: [...usuarioInfo.movimientos, responseMovimientoUsuarioPagoGiro.id]
+                            },
                             { new: true },
                             (error, data) => handleResponse(error, data, "Crear Giro"))
                             .clone();
 
                         if (usuarioModificado) {
-                            const asesorInfo = await Asesor.findById(
-                                usuarioInfo.asesor,
-                                (error, data) => handleResponse(error, data, "Crear Giro"))
-                                .clone();
-                            if (asesorInfo) {
-                                let adminInfo = await Asesor.find(
-                                    { numeroDocumento: "admin" },
+
+                            if (adminInfo) {
+                                const gananciaDelGiro = new ObtenerGananciasGiro(usuarioInfo, asesorInfo, adminInfo, valorGiro);
+                                const ganancias = gananciaDelGiro.obtenerCuentas();
+
+                                const movimientoUsuario = new Movimiento({
+                                    valor: ganancias.usuario,
+                                    saldo: usuarioInfo.saldo + ganancias.usuario,
+                                    fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
+                                    sentido: "HABER",
+                                    concepto: `Comisión del giro hecho por el usuario`
+                                });
+
+                                const responseMovimientoUsuario = await movimientoUsuario.save();
+
+                                const UsuarioModificado = await Usuario.findByIdAndUpdate(
+                                    usuarioInfo.id,
+                                    {
+                                        saldo: update.saldo + ganancias.usuario,
+                                        movimientos: [...usuarioInfo.movimientos, responseMovimientoUsuario.id]
+                                    },
+                                    { new: true },
                                     (error, data) => handleResponse(error, data, "Crear Giro"))
                                     .clone();
-                                adminInfo = adminInfo[0];
-                                if (adminInfo) {
-                                    const gananciaDelGiro = new ObtenerGananciasGiro(usuarioInfo, asesorInfo, adminInfo, valorGiro);
-                                    const ganancias = gananciaDelGiro.obtenerCuentas();
-                             
-                                    const movimientoUsuario = new Movimiento({
-                                        valor: ganancias.usuario,
-                                        saldo: usuarioInfo.saldo + ganancias.usuario,
+
+                                if (UsuarioModificado) {
+
+                                    const movimientoAsesor = new Movimiento({
+                                        valor: ganancias.asesor,
+                                        saldo: asesorInfo.saldo + ganancias.asesor,
                                         fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
                                         sentido: "HABER",
-                                        concepto: `Comisión del giro hecho por el usuario`
+                                        concepto: `Comisión del giro hecho por el usuario identificado con el numero: ${usuarioInfo.numeroDocumento}`
                                     });
 
-                                    const responseMovimientoUsuario = await movimientoUsuario.save();
-                              
-                                    const UsuarioModificado = await Usuario.findByIdAndUpdate(
-                                        usuarioInfo.id,
+                                    const responseMovimientoAsesor = await movimientoAsesor.save();
+
+                                    const AsesorModificado = await Asesor.findByIdAndUpdate(
+                                        asesorInfo.id,
                                         {
-                                            saldo: usuarioInfo.saldo + ganancias.usuario,
-                                            movimientos: [...usuarioInfo.movimientos, responseMovimientoUsuario.id]
+                                            saldo: asesorInfo.saldo + ganancias.asesor,
+                                            movimientos: [...asesorInfo.movimientos, responseMovimientoAsesor.id]
                                         },
                                         { new: true },
                                         (error, data) => handleResponse(error, data, "Crear Giro"))
                                         .clone();
 
-                                    if (UsuarioModificado) {
+                                    if (AsesorModificado) {
 
-                                        const movimientoAsesor = new Movimiento({
-                                            valor: ganancias.asesor,
-                                            saldo: asesorInfo.saldo + ganancias.asesor,
+                                        const movimientoAdmin = new Movimiento({
+                                            valor: ganancias.admin,
+                                            saldo: adminInfo.saldo + ganancias.admin,
                                             fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
                                             sentido: "HABER",
                                             concepto: `Comisión del giro hecho por el usuario identificado con el numero: ${usuarioInfo.numeroDocumento}`
                                         });
 
-                                        const responseMovimientoAsesor = await movimientoAsesor.save();
+                                        const responseMovimientoAdmin = await movimientoAdmin.save();
 
-                                        const AsesorModificado = await Asesor.findByIdAndUpdate(
-                                            asesorInfo.id,
+                                        const AdminModificado = await Asesor.findByIdAndUpdate(
+                                            adminInfo.id,
                                             {
-                                                saldo: asesorInfo.saldo + ganancias.asesor,
-                                                movimientos: [...asesorInfo.movimientos, responseMovimientoAsesor.id]
+                                                saldo: adminInfo.saldo + ganancias.admin,
+                                                movimientos: [...adminInfo.movimientos, responseMovimientoAdmin.id]
                                             },
                                             { new: true },
                                             (error, data) => handleResponse(error, data, "Crear Giro"))
                                             .clone();
-
-                                        if (AsesorModificado) {
-
-                                            const movimientoAdmin = new Movimiento({
-                                                valor: ganancias.admin,
-                                                saldo: adminInfo.saldo + ganancias.admin,
-                                                fechaEnvio: new Intl.DateTimeFormat('es-co').format(new Date()),
-                                                sentido: "HABER",
-                                                concepto: `Comisión del giro hecho por el usuario identificado con el numero: ${usuarioInfo.numeroDocumento}`
-                                            });
-
-                                            const responseMovimientoAdmin = await movimientoAdmin.save();
-
-                                            const AdminModificado = await Asesor.findByIdAndUpdate(
-                                                adminInfo.id,
-                                                {
-                                                    saldo: adminInfo.saldo + ganancias.admin,
-                                                    movimientos: [...adminInfo.movimientos, responseMovimientoAdmin.id]
-                                                },
-                                                { new: true },
-                                                (error, data) => handleResponse(error, data, "Crear Giro"))
-                                                .clone();
-                                            if (AdminModificado) return response;
-                                            else throw new Error("No se pudo añadir la ganancia al admin!");
-                                        }
-                                        else throw new Error("No se pudo añadir la ganancia al asesor!");
+                                        if (AdminModificado) return response;
+                                        else throw new Error("No se pudo añadir la ganancia al admin!");
                                     }
-                                    else throw new Error("No se pudo añadir la ganancia al usuario!");
+                                    else throw new Error("No se pudo añadir la ganancia al asesor!");
                                 }
-                                else throw new Error("No se pudo recuperar el administrador!");
+                                else throw new Error("No se pudo añadir la ganancia al usuario!");
                             }
-                            else throw new Error("No se pudo recuperar el asesor!");
+                            // else throw new Error("No se pudo recuperar el administrador!");
+                            // }
+                            // else throw new Error("No se pudo recuperar el asesor!");
+
                         }
                         else throw new Error("No se pudo modificar el usuario para agregar el giro!");
                     }
@@ -168,6 +198,7 @@ export const crearGiro = async (_root,
                 else throw new Error("Saldo insuficiente!");
             }
             else throw new Error("No se pudo recuperar el usuario!");
+
         } catch (error) {
             throw new Error(error);
         }

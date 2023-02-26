@@ -13,7 +13,8 @@ export const obtenerUsuarioPorId = async (_root, { id }, context) => {
                 (error, data) => handleResponse(error, data, "Obtener Usuario Por Id"))
                 .clone()
                 .populate("giros")
-                .populate("asesor");
+                .populate("asesor")
+                .populate("movimientos");
             if (usuario) return usuario;
             else throw new Error("No se pudo obtener el usuario!");
         }

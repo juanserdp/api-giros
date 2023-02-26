@@ -16,6 +16,8 @@ import { crearAsesor } from "./mutation/asesor/crearAsesor";
 import { editarAsesor } from "./mutation/asesor/editarAsesor";
 import { eliminarAsesor } from "./mutation/asesor/eliminarAsesor";
 import { obtenerAsesores } from "./query/asesor/obtenerAsesores";
+import {obtenerTasaAdmin} from "./query/asesor/obtenerTasaAdmin";
+import {obtenerTasaAsesorPorId} from "./query/asesor/obtenerTasaAsesorPorId";
 import { obtenerAsesorPorId } from "./query/asesor/obtenerAsesorPorId";
 
 import { recargarAsesor } from "./mutation/asesor/recargarAsesor";
@@ -38,6 +40,8 @@ export const resolvers = {
         obtenerGirosPorIdUsuario,
         obtenerGirosPorUsuariosPorIdAsesor,
         obtenerAsesores,
+        obtenerTasaAdmin,
+        obtenerTasaAsesorPorId,
         obtenerAsesorPorId,
         obtenerMensajes
     },
@@ -59,42 +63,3 @@ export const resolvers = {
         eliminarMensaje
     }
 };
-
-// Queries
-
-//resolvers.Query.obtenerUsuarios = obtenerUsuarios;
-// resolvers.Query.obtenerUsuarioPorId = obtenerUsuarioPorId;
-// resolvers.Query.obtenerUsuariosPorIdAsesor = obtenerUsuariosPorIdAsesor;
-
-// resolvers.Query.obtenerGiros = obtenerGiros;
-// resolvers.Query.obtenerGiroPorId = obtenerGiroPorId;
-// resolvers.Query.obtenerGirosPorIdUsuario = obtenerGirosPorIdUsuario;
-// resolvers.Query.obtenerGirosPorUsuariosPorIdAsesor = obtenerGirosPorUsuariosPorIdAsesor;
-
-// resolvers.Query.obtenerAsesores = obtenerAsesores;
-// resolvers.Query.obtenerAsesorPorId = obtenerAsesorPorId;
-
-// resolvers.Query.obtenerMensajes = obtenerMensajes;
-
-// Mutations
-
-// resolvers.Mutation.login = login;
-// resolvers.Mutation.crearUsuario = crearUsuario;
-// resolvers.Mutation.editarUsuario = editarUsuario;
-// resolvers.Mutation.eliminarUsuario = eliminarUsuario;
-
-// resolvers.Mutation.crearGiro = crearGiro;
-// resolvers.Mutation.editarGiro = editarGiro;
-// resolvers.Mutation.eliminarGiro = eliminarGiro;
-
-// resolvers.Mutation.crearAsesor = crearAsesor;
-// resolvers.Mutation.editarAsesor = editarAsesor;
-// resolvers.Mutation.eliminarAsesor = eliminarAsesor;
-
-// resolvers.Mutation.recargarAsesor = recargarAsesor;
-// resolvers.Mutation.recargarUsuario = recargarUsuario;
-
-
-// resolvers.Mutation.crearMensaje = crearMensaje;
-// resolvers.Mutation.editarMensaje = editarMensaje;
-// resolvers.Mutation.eliminarMensaje = eliminarMensaje;
